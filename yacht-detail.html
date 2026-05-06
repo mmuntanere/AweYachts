@@ -172,7 +172,17 @@
 
     // ===== HAMBURGER =====
     const hamburger = document.getElementById('hamburger');
+    const navbar = document.getElementById('navbar');
+    const heroBg = document.querySelector('.detail-hero-bg');
     const mobileMenu = document.getElementById('mobile-menu');
+
+    window.addEventListener('scroll', () => { 
+      navbar.classList.toggle('scrolled', window.scrollY > 60); 
+      if (window.scrollY < window.innerHeight && heroBg) {
+        heroBg.style.transform = `translateY(${window.scrollY * 0.35}px)`;
+      }
+    }, { passive: true });
+
     hamburger.addEventListener('click', () => {
       const isOpen = mobileMenu.style.display === 'flex';
       mobileMenu.style.display = isOpen ? 'none' : 'flex';

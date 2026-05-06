@@ -430,10 +430,18 @@
   </footer>
 
   <script>
-    // ===== NAVBAR SCROLL =====
+    // ===== NAVBAR SCROLL & PARALLAX =====
     const navbar = document.getElementById('navbar');
+    const heroBg = document.querySelector('.hero-video-wrap');
+    
     window.addEventListener('scroll', () => {
+      // Navbar
       navbar.classList.toggle('scrolled', window.scrollY > 60);
+      
+      // Hero Parallax (only run if near top to save performance)
+      if (window.scrollY < window.innerHeight && heroBg) {
+        heroBg.style.transform = `translateY(${window.scrollY * 0.35}px)`;
+      }
     }, { passive: true });
 
     // ===== HAMBURGER =====
