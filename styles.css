@@ -373,6 +373,10 @@ footer {
   display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
   gap: 60px; margin-bottom: 60px;
 }
+.footer-grid {
+  display: grid; grid-template-columns: 2fr 1fr 1fr;
+  gap: 60px; margin-bottom: 60px;
+}
 .footer-logo-img { height: 60px; width: auto; object-fit: contain; }
 .footer-desc {
   font-size: 13px; line-height: 1.8; color: var(--text-muted);
@@ -441,7 +445,7 @@ footer {
   .about-content { padding: 60px 40px; }
   .contact-section { grid-template-columns: 1fr; }
   .contact-info, .contact-form-wrap { padding: 60px 40px; }
-  .footer-top { grid-template-columns: 1fr 1fr; gap: 40px; }
+  .footer-top, .footer-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
   .yachts-grid .yacht-card { flex-basis: 48% !important; }
   .services-grid { grid-template-columns: 1fr 1fr; }
 }
@@ -451,7 +455,7 @@ footer {
   .hero-title { white-space: normal; letter-spacing: 3px; }
   .yachts-grid .yacht-card { flex-basis: 100% !important; height: 300px; }
   .services-grid { grid-template-columns: 1fr; }
-  .footer-top { grid-template-columns: 1fr; gap: 32px; }
+  .footer-top, .footer-grid { grid-template-columns: 1fr; gap: 32px; }
   .form-row { grid-template-columns: 1fr; }
   .hero-actions { flex-direction: column; }
   .detail-content-grid { grid-template-columns: 1fr; gap: 40px; }
