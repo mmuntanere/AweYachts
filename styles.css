@@ -446,14 +446,14 @@ footer {
   .contact-section { grid-template-columns: 1fr; }
   .contact-info, .contact-form-wrap { padding: 60px 40px; }
   .footer-top, .footer-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
-  .yachts-grid .yacht-card { flex-basis: 48% !important; }
+  .yachts-grid .yacht-card, .yachts-grid.filtered .yacht-card { flex-basis: 48% !important; }
   .services-grid { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 768px) {
   .nav-links { display: none; }
   .nav-hamburger { display: flex; }
   .hero-title { white-space: normal; letter-spacing: 3px; }
-  .yachts-grid .yacht-card { flex-basis: 100% !important; height: 300px; }
+  .yachts-grid .yacht-card, .yachts-grid.filtered .yacht-card { flex-basis: 100% !important; height: 300px; }
   .services-grid { grid-template-columns: 1fr; }
   .footer-top, .footer-grid { grid-template-columns: 1fr; gap: 32px; }
   .form-row { grid-template-columns: 1fr; }
