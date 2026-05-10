@@ -41,10 +41,7 @@
   <!-- HERO -->
   <section class="hero" id="home" aria-label="Hero section">
     <div class="hero-video-wrap" aria-hidden="true">
-      <video autoplay muted loop playsinline>
-        <source src="hero-video.mp4" type="video/mp4">
-      </video>
-      <img src="hero-bg.png" alt="Luxury superyacht at Mediterranean marina" class="hero-fallback">
+      <img src="hero-bg.png" alt="Luxury superyacht at Mediterranean marina" style="width: 100%; height: 100%; object-fit: cover;">
     </div>
     <div class="hero-overlay" aria-hidden="true"></div>
     <div class="hero-content">
@@ -67,12 +64,6 @@
       <div>
         <div class="section-tag">Exclusive Selection</div>
         <h2 class="section-title">Featured <em>Yachts</em></h2>
-      </div>
-      <div class="yachts-filters" role="group" aria-label="Filter yachts">
-        <button class="filter-btn active" id="filter-all" onclick="filterYachts('all')">All</button>
-        <button class="filter-btn" id="filter-motor" onclick="filterYachts('motor')">Motor</button>
-        <button class="filter-btn" id="filter-sailing" onclick="filterYachts('sailing')">Sailing</button>
-        <button class="filter-btn" id="filter-catamaran" onclick="filterYachts('catamaran')">Catamaran</button>
       </div>
     </div>
 
