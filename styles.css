@@ -95,12 +95,14 @@ ul { list-style: none; }
   animation: fadeUp 1.2s ease both;
 }
 .hero-badge {
-  display: inline-flex; align-items: center; gap: 10px;
-  font-size: 10px; letter-spacing: 5px; text-transform: uppercase;
-  color: var(--gold); margin-bottom: 24px;
+  display: inline-flex; align-items: center; gap: 12px;
+  font-size: 12px; letter-spacing: 5px; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 24px; font-weight: 500;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.8);
 }
 .hero-badge::before, .hero-badge::after {
   content: ''; display: block; width: 40px; height: 1px; background: var(--gold);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.8);
 }
 .hero-title {
   font-family: var(--font-heading);
