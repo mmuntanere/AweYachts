@@ -288,8 +288,11 @@
 
   <!-- EXPERIENCE BANNER -->
   <div class="experience-banner" aria-label="Call to action">
-    <div class="experience-banner-bg" aria-hidden="true">
-      <img src="yacht-interior.png" alt="Luxury yacht interior">
+    <div class="experience-banner-bg js-parallax" aria-hidden="true" style="height: 160%; top: -30%;">
+      <video autoplay muted loop playsinline style="width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0;">
+        <source src="hero-video.mp4" type="video/mp4">
+      </video>
+      <img src="banner-video-fallback.png" alt="Luxury yacht" style="width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; z-index: -1;">
     </div>
     <div class="experience-banner-overlay" aria-hidden="true"></div>
     <div class="experience-banner-content">
