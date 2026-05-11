@@ -478,23 +478,46 @@
     }
 
     // ===== CONTACT FORM =====
-    function handleFormSubmit(e) {
+    async function handleFormSubmit(e) {
       e.preventDefault();
+      const form = e.target;
       const btn = document.getElementById('contact-submit-btn');
+      const originalText = btn.textContent;
+      
       btn.textContent = 'Sending...';
       btn.style.opacity = '0.7';
+      btn.disabled = true;
+
+      try {
+        const formData = new FormData(form);
+        const response = await fetch('send_mail.php', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (response.ok) {
+          btn.textContent = '✓ Enquiry Sent';
+          btn.style.background = '#1a3a1a';
+          btn.style.color = '#6fcf97';
+          btn.style.border = '1px solid #6fcf97';
+          form.reset();
+        } else {
+          throw new Error('Network response was not ok.');
+        }
+      } catch (error) {
+        btn.textContent = 'X Error Sending';
+        btn.style.background = '#4a1a1a';
+        btn.style.color = '#cf6f6f';
+      }
+
       setTimeout(() => {
-        btn.textContent = '✓ Enquiry Sent';
-        btn.style.background = '#1a3a1a';
-        btn.style.color = '#6fcf97';
-        setTimeout(() => {
-          btn.textContent = 'Send Enquiry';
-          btn.style.background = '';
-          btn.style.color = '';
-          btn.style.opacity = '1';
-          document.getElementById('contact-form').reset();
-        }, 3000);
-      }, 1200);
+        btn.textContent = originalText;
+        btn.style.background = '';
+        btn.style.color = '';
+        btn.style.border = '';
+        btn.style.opacity = '1';
+        btn.disabled = false;
+      }, 4000);
     }
   </script>
 </body>
