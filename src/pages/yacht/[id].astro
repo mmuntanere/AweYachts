@@ -44,7 +44,7 @@ const { yacht } = Astro.props;
   <!-- CONTENT -->
   <section class="detail-content detail-content-grid" style="max-width: 1200px; margin: 0 auto; padding: 60px 40px;">
     
-    <div class="detail-description reveal">
+    <div class="detail-description">
       <h2 class="section-title" style="font-size: 32px;">About this <em>Yacht</em></h2>
       <p id="yacht-desc" class="section-desc" style="text-align: left; max-width: 100%; color: var(--cream); font-size: 16px; line-height: 1.8;">{yacht.description}</p>
       
@@ -58,7 +58,7 @@ const { yacht } = Astro.props;
       </div>
     </div>
 
-    <div class="detail-sidebar reveal reveal-delay-1">
+    <div class="detail-sidebar">
       <div class="specs-card" style="background: var(--navy-mid); padding: 40px; border: 1px solid rgba(201,169,110,0.2);">
         <div style="font-size: 28px; color: var(--gold); font-family: var(--font-heading); margin-bottom: 30px;" id="yacht-price">{yacht.price}</div>
         
