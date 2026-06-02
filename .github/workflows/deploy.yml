@@ -36,5 +36,4 @@ jobs:
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
         local-dir: ./dist/
-        # Make sure standard shared host folder is correct. Sometimes it's /public_html/
-        # server-dir: /public_html/ 
+        server-dir: /www/
