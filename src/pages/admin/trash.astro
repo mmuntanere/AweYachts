@@ -1,0 +1,90 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="AWE YACHTS — Trash Bin">
+  <div class="admin-main">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+      <h1 class="hero-title" style="font-size: 40px; margin: 0;">Trash <em>Bin</em></h1>
+      <a href="/admin" class="btn-primary" style="padding: 10px 20px; background: transparent; border: 1px solid var(--gold); color: var(--gold);"><i class="fas fa-arrow-left"></i> Back to Fleet</a>
+    </div>
+
+    <div class="admin-card">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Model</th>
+            <th>Price</th>
+            <th>Length</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="yachts-tbody">
+          <tr><td colspan="5" style="text-align:center;">Loading deleted yachts...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', async () => {
+      // Wait for auth to settle
+      await new Promise(r => setTimeout(r, 200));
+
+      const { data, error } = await window.supabase.from('yachts').select('*').eq('is_deleted', true).order('name');
+      const tbody = document.getElementById('yachts-tbody');
+      
+      if (error) {
+        tbody.innerHTML = `<tr><td colspan="5" style="color:#ff4d4d;">Error loading data: ${error.message}</td></tr>`;
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--text-muted);">The trash is empty.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = data.map(yacht => `
+        <tr>
+          <td style="color: var(--text-muted);"><strong>${yacht.name}</strong></td>
+          <td style="color: var(--text-muted);">${yacht.type}</td>
+          <td style="color: var(--text-muted);">${yacht.price}</td>
+          <td style="color: var(--text-muted);">${yacht.length}</td>
+          <td>
+            <button class="action-btn" onclick="restoreYacht('${yacht.id}')" title="Restore Yacht" style="color: #4CAF50; border-color: #4CAF50;">
+              <i class="fas fa-trash-restore"></i>
+            </button>
+            <button class="action-btn delete" onclick="destroyYacht('${yacht.id}')" title="Delete Permanently">
+              <i class="fas fa-times"></i>
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    });
+
+    window.restoreYacht = async (id) => {
+      if(!confirm(`Are you sure you want to restore yacht '${id}'? It will reappear on the public website.`)) return;
+      
+      const { data, error } = await window.supabase.from('yachts').update({ is_deleted: false }).eq('id', id).select();
+      if(error) {
+        alert('Error restoring yacht: ' + error.message);
+      } else {
+        window.location.reload();
+      }
+    };
+
+    window.destroyYacht = async (id) => {
+      if(!confirm(`WARNING! Are you sure you want to PERMANENTLY destroy yacht '${id}'? This cannot be undone.`)) return;
+      
+      const { data, error } = await window.supabase.from('yachts').delete().eq('id', id).select();
+      if(error) {
+        alert('Error destroying yacht: ' + error.message);
+      } else if (!data || data.length === 0) {
+        alert('Error: The yacht was not destroyed. You may lack DELETE permissions in Supabase.');
+      } else {
+        window.location.reload();
+      }
+    };
+  </script>
+</AdminLayout>

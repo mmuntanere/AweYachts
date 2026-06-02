@@ -5,7 +5,7 @@ import ContactForm from '../components/ContactForm.astro';
 import { supabase } from '../lib/supabase';
 
 // Fetch from Supabase
-const { data: yachtsArray, error } = await supabase.from('yachts').select('*');
+const { data: yachtsArray, error } = await supabase.from('yachts').select('*').neq('is_deleted', true);
 if (error) console.error("Error fetching yachts", error);
 ---
 

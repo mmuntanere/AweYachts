@@ -6,7 +6,10 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
   <div class="admin-main">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
       <h1 class="hero-title" style="font-size: 40px; margin: 0;">Fleet <em>Management</em></h1>
-      <a href="/admin/yacht/new" class="btn-primary" style="padding: 10px 20px;">+ Add New Yacht</a>
+      <div>
+        <a href="/admin/trash" class="btn-primary" style="padding: 10px 20px; background: transparent; border: 1px solid var(--gold); color: var(--gold); margin-right: 15px;"><i class="fas fa-trash-restore"></i> Trash</a>
+        <a href="/admin/yacht/new" class="btn-primary" style="padding: 10px 20px;">+ Add New Yacht</a>
+      </div>
     </div>
 
     <div class="admin-card">
@@ -32,7 +35,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
       // Wait for auth to settle
       await new Promise(r => setTimeout(r, 200));
 
-      const { data, error } = await window.supabase.from('yachts').select('*').order('name');
+      const { data, error } = await window.supabase.from('yachts').select('*').neq('is_deleted', true).order('name');
       const tbody = document.getElementById('yachts-tbody');
       
       if (error) {
@@ -64,15 +67,12 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     });
 
     window.deleteYacht = async (id) => {
-      if(!confirm(`Are you sure you want to delete yacht '${id}'? This cannot be undone.`)) return;
+      if(!confirm(`Are you sure you want to move yacht '${id}' to the trash?`)) return;
       
-      const { data, error } = await window.supabase.from('yachts').delete().eq('id', id).select();
+      const { data, error } = await window.supabase.from('yachts').update({ is_deleted: true }).eq('id', id).select();
       if(error) {
         alert('Error deleting yacht: ' + error.message);
-      } else if (!data || data.length === 0) {
-        alert('Error: The yacht was not deleted. This usually happens because you lack permissions in Supabase (Row Level Security missing DELETE policy).');
       } else {
-        alert('Yacht deleted successfully.');
         window.location.reload();
       }
     };
