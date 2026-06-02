@@ -32,7 +32,6 @@ const { yacht } = Astro.props;
       </div>
     </div>
     <div class="container reveal" style="position: relative; z-index: 2; width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 40px;">
-      <div class="yacht-tag" id="yacht-type" style="margin-bottom: 20px;">{yacht.type}</div>
       <h1 class="hero-title" id="yacht-name" style="margin-bottom: 20px; font-size: clamp(40px, 5vw, 80px);">{yacht.name}</h1>
       <div class="yacht-specs" id="yacht-hero-specs" style="font-size: 14px;">
         <span class="yacht-spec"><i class="fas fa-ruler-horizontal"></i> {yacht.length}</span>
@@ -70,6 +69,10 @@ const { yacht } = Astro.props;
         <div class="spec-row" style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 16px 0;">
           <span style="color: var(--text-muted);">Builder</span>
           <span id="spec-builder" style="color: var(--white); font-weight: 500;">{yacht.builder}</span>
+        </div>
+        <div class="spec-row" style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 16px 0;">
+          <span style="color: var(--text-muted);">Model</span>
+          <span id="spec-model" style="color: var(--white); font-weight: 500;">{yacht.type}</span>
         </div>
         <div class="spec-row" style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 16px 0;">
           <span style="color: var(--text-muted);">Year</span>
