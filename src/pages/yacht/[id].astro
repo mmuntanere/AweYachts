@@ -87,6 +87,67 @@ const { yacht } = Astro.props;
           <span id="spec-speed" style="color: var(--white); font-weight: 500;">{yacht.speed}</span>
         </div>
 
+        {yacht.guest_cabins && (
+          <div class="spec-row" style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 16px 0;">
+            <span style="color: var(--text-muted);">Guest Cabins</span>
+            <span class="spec-dynamic" style="color: var(--white); font-weight: 500;">{yacht.guest_cabins}</span>
+          </div>
+        )}
+        {yacht.crew_cabins && (
+          <div class="spec-row" style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 16px 0;">
+            <span style="color: var(--text-muted);">Crew Cabins</span>
+            <span class="spec-dynamic" style="color: var(--white); font-weight: 500;">{yacht.crew_cabins}</span>
+          </div>
+        )}
+        {yacht.guest_heads && (
+          <div class="spec-row" style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 16px 0;">
+            <span style="color: var(--text-muted);">Guest Heads</span>
+            <span class="spec-dynamic" style="color: var(--white); font-weight: 500;">{yacht.guest_heads}</span>
+          </div>
+        )}
+        {yacht.crew_heads && (
+          <div class="spec-row" style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 16px 0;">
+            <span style="color: var(--text-muted);">Crew Heads</span>
+            <span class="spec-dynamic" style="color: var(--white); font-weight: 500;">{yacht.crew_heads}</span>
+          </div>
+        )}
+        {yacht.beam && (
+          <div class="spec-row" style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 16px 0;">
+            <span style="color: var(--text-muted);">Beam</span>
+            <span class="spec-dynamic" style="color: var(--white); font-weight: 500;">{yacht.beam}</span>
+          </div>
+        )}
+        {yacht.max_draft && (
+          <div class="spec-row" style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 16px 0;">
+            <span style="color: var(--text-muted);">Max Draft</span>
+            <span class="spec-dynamic" style="color: var(--white); font-weight: 500;">{yacht.max_draft}</span>
+          </div>
+        )}
+        {yacht.fuel_type && (
+          <div class="spec-row" style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 16px 0;">
+            <span style="color: var(--text-muted);">Fuel Type</span>
+            <span class="spec-dynamic" style="color: var(--white); font-weight: 500;">{yacht.fuel_type}</span>
+          </div>
+        )}
+        {yacht.drive_type && (
+          <div class="spec-row" style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 16px 0;">
+            <span style="color: var(--text-muted);">Drive Type</span>
+            <span class="spec-dynamic" style="color: var(--white); font-weight: 500;">{yacht.drive_type}</span>
+          </div>
+        )}
+        {yacht.class && (
+          <div class="spec-row" style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 16px 0;">
+            <span style="color: var(--text-muted);">Class</span>
+            <span class="spec-dynamic" style="color: var(--white); font-weight: 500;">{yacht.class}</span>
+          </div>
+        )}
+        {yacht.condition && (
+          <div class="spec-row" style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 16px 0;">
+            <span style="color: var(--text-muted);">Condition</span>
+            <span class="spec-dynamic" style="color: var(--white); font-weight: 500;">{yacht.condition}</span>
+          </div>
+        )}
+
         <a href="/#contact" class="nav-cta" style="display: block; text-align: center; margin-top: 40px; width: 100%;">Enquire Now</a>
       </div>
     </div>

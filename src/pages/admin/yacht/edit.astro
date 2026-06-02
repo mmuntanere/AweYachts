@@ -59,6 +59,47 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
             <label>Speed</label>
             <input type="text" id="yacht-speed">
           </div>
+          <!-- Optional Fields -->
+          <div class="form-group">
+            <label>Guest Cabins</label>
+            <input type="text" id="yacht-guest-cabins">
+          </div>
+          <div class="form-group">
+            <label>Crew Cabins</label>
+            <input type="text" id="yacht-crew-cabins">
+          </div>
+          <div class="form-group">
+            <label>Guest Heads</label>
+            <input type="text" id="yacht-guest-heads">
+          </div>
+          <div class="form-group">
+            <label>Crew Heads</label>
+            <input type="text" id="yacht-crew-heads">
+          </div>
+          <div class="form-group">
+            <label>Beam</label>
+            <input type="text" id="yacht-beam">
+          </div>
+          <div class="form-group">
+            <label>Max Draft</label>
+            <input type="text" id="yacht-max-draft">
+          </div>
+          <div class="form-group">
+            <label>Fuel Type</label>
+            <input type="text" id="yacht-fuel-type">
+          </div>
+          <div class="form-group">
+            <label>Drive Type</label>
+            <input type="text" id="yacht-drive-type">
+          </div>
+          <div class="form-group">
+            <label>Class</label>
+            <input type="text" id="yacht-class">
+          </div>
+          <div class="form-group">
+            <label>Condition</label>
+            <input type="text" id="yacht-condition">
+          </div>
         </div>
 
         <div class="form-group">
@@ -122,9 +163,21 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
       document.getElementById('yacht-guests').value = data.guests;
       document.getElementById('yacht-cabins').value = data.cabins;
       document.getElementById('yacht-year').value = data.year;
-      document.getElementById('yacht-builder').value = data.builder;
-      document.getElementById('yacht-speed').value = data.speed;
-      document.getElementById('yacht-description').value = data.description;
+      document.getElementById('yacht-builder').value = data.builder || '';
+      document.getElementById('yacht-speed').value = data.speed || '';
+      
+      document.getElementById('yacht-guest-cabins').value = data.guest_cabins || '';
+      document.getElementById('yacht-crew-cabins').value = data.crew_cabins || '';
+      document.getElementById('yacht-guest-heads').value = data.guest_heads || '';
+      document.getElementById('yacht-crew-heads').value = data.crew_heads || '';
+      document.getElementById('yacht-beam').value = data.beam || '';
+      document.getElementById('yacht-max-draft').value = data.max_draft || '';
+      document.getElementById('yacht-fuel-type').value = data.fuel_type || '';
+      document.getElementById('yacht-drive-type').value = data.drive_type || '';
+      document.getElementById('yacht-class').value = data.class || '';
+      document.getElementById('yacht-condition').value = data.condition || '';
+
+      document.getElementById('yacht-description').value = data.description || '';
 
       if(data.main_image) {
         const preview = document.getElementById('current-image-preview');
@@ -228,6 +281,18 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
         year: document.getElementById('yacht-year').value,
         builder: document.getElementById('yacht-builder').value,
         speed: document.getElementById('yacht-speed').value,
+
+        guest_cabins: document.getElementById('yacht-guest-cabins').value,
+        crew_cabins: document.getElementById('yacht-crew-cabins').value,
+        guest_heads: document.getElementById('yacht-guest-heads').value,
+        crew_heads: document.getElementById('yacht-crew-heads').value,
+        beam: document.getElementById('yacht-beam').value,
+        max_draft: document.getElementById('yacht-max-draft').value,
+        fuel_type: document.getElementById('yacht-fuel-type').value,
+        drive_type: document.getElementById('yacht-drive-type').value,
+        class: document.getElementById('yacht-class').value,
+        condition: document.getElementById('yacht-condition').value,
+
         description: document.getElementById('yacht-description').value,
         main_image,
         gallery
