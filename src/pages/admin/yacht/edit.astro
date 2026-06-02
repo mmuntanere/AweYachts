@@ -75,6 +75,16 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
           <p style="font-size:12px; color:var(--text-muted); margin-top:5px;">Leave empty to keep the current image.</p>
         </div>
 
+        <div class="form-group" style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 20px; padding-top: 20px;">
+          <label>Manage Gallery</label>
+          <div id="gallery-preview-container" style="margin-bottom: 10px; display: flex; flex-wrap: wrap; gap: 10px;">
+            <!-- Current gallery images will be injected here -->
+          </div>
+          <label style="font-size: 14px; margin-top: 10px;">Add New Gallery Images</label>
+          <input type="file" id="yacht-gallery-files" accept="image/*" multiple>
+          <p style="font-size:12px; color:var(--text-muted); margin-top:5px;">Select multiple files to add to the existing gallery.</p>
+        </div>
+
         <button type="submit" class="btn-primary" id="save-btn" style="width: 100%; margin-top: 20px;">Update Yacht</button>
       </form>
     </div>
@@ -123,9 +133,32 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
         preview.style.display = 'block';
       }
 
+      window.currentGallery = data.gallery || [];
+      window.renderGallery();
+
       document.getElementById('edit-loading').style.display = 'none';
       document.getElementById('edit-form-container').style.display = 'block';
     });
+
+    window.renderGallery = () => {
+      const container = document.getElementById('gallery-preview-container');
+      if (window.currentGallery.length === 0) {
+        container.innerHTML = '<p style="font-size:13px; color:var(--text-muted);">No gallery images.</p>';
+        return;
+      }
+      container.innerHTML = window.currentGallery.map((img, index) => {
+        const src = img.startsWith('http') ? img : `/${img}`;
+        return `<div style="position:relative; display:inline-block;">
+          <img src="${src}" style="width:100px; height:75px; object-fit:cover; border-radius:4px; border: 1px solid rgba(255,255,255,0.1);">
+          <button type="button" onclick="removeGalleryImage(${index})" style="position:absolute; top:-8px; right:-8px; background:#ff4d4d; color:white; border:none; border-radius:50%; width:24px; height:24px; cursor:pointer; font-weight:bold; display:flex; align-items:center; justify-content:center; box-shadow: 0 2px 5px rgba(0,0,0,0.5);">&times;</button>
+        </div>`;
+      }).join('');
+    };
+
+    window.removeGalleryImage = (index) => {
+      window.currentGallery.splice(index, 1);
+      window.renderGallery();
+    };
 
     window.handleUpdate = async (e) => {
       e.preventDefault();
@@ -161,6 +194,29 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
         main_image = publicUrl;
       }
 
+      // Upload new Gallery Images
+      const galleryInput = document.getElementById('yacht-gallery-files');
+      let gallery = [...window.currentGallery];
+      if (galleryInput.files.length > 0) {
+        btn.textContent = 'Uploading gallery...';
+        for (let i = 0; i < galleryInput.files.length; i++) {
+          const file = galleryInput.files[i];
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${id}-gal-${Date.now()}-${i}.${fileExt}`;
+          
+          const { error: galError } = await window.supabase.storage
+            .from('yacht-images')
+            .upload(fileName, file);
+            
+          if (!galError) {
+            const { data: { publicUrl } } = window.supabase.storage
+              .from('yacht-images')
+              .getPublicUrl(fileName);
+            gallery.push(publicUrl);
+          }
+        }
+      }
+
       // Update Database
       const payload = {
         name: document.getElementById('yacht-name').value,
@@ -173,7 +229,8 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
         builder: document.getElementById('yacht-builder').value,
         speed: document.getElementById('yacht-speed').value,
         description: document.getElementById('yacht-description').value,
-        main_image
+        main_image,
+        gallery
       };
 
       const { error } = await window.supabase.from('yachts').update(payload).eq('id', id);

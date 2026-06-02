@@ -55,7 +55,7 @@ if (error) console.error("Error fetching yachts", error);
             guests={parseInt(yacht.guests.split(' ')[0])}
             year={parseInt(yacht.year)}
             price={yacht.price}
-            image={`/${yacht.main_image}`}
+            image={yacht.main_image.startsWith('http') ? yacht.main_image : `/${yacht.main_image}`}
             tags={tags}
             delay={delay}
           />
