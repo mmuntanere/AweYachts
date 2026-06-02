@@ -66,9 +66,11 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     window.deleteYacht = async (id) => {
       if(!confirm(`Are you sure you want to delete yacht '${id}'? This cannot be undone.`)) return;
       
-      const { error } = await window.supabase.from('yachts').delete().eq('id', id);
+      const { data, error } = await window.supabase.from('yachts').delete().eq('id', id).select();
       if(error) {
         alert('Error deleting yacht: ' + error.message);
+      } else if (!data || data.length === 0) {
+        alert('Error: The yacht was not deleted. This usually happens because you lack permissions in Supabase (Row Level Security missing DELETE policy).');
       } else {
         alert('Yacht deleted successfully.');
         window.location.reload();
