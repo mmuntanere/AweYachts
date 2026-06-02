@@ -28,62 +28,95 @@ const { title } = Astro.props;
     
     <style>
         body {
-            background-color: var(--navy);
+            background-color: #040A14;
+            background-image: radial-gradient(circle at 50% 0%, rgba(201,169,110,0.05) 0%, transparent 50%);
+            background-attachment: fixed;
             color: var(--cream);
             font-family: var(--font-body);
             opacity: 0; /* Hide until auth check completes */
             transition: opacity 0.3s ease;
+            min-height: 100vh;
         }
         .admin-nav {
-            background: var(--navy-mid);
+            background: rgba(6, 16, 32, 0.8);
+            backdrop-filter: blur(10px);
             padding: 15px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid rgba(255,255,255,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
         .admin-nav img {
             height: 30px;
         }
         .admin-main {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 40px;
+            max-width: 1000px;
+            margin: 60px auto;
+            padding: 0 40px;
         }
         .admin-table {
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 10px;
         }
         .admin-table th, .admin-table td {
-            padding: 15px;
-            text-align: left;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
         }
+        .admin-table th:first-child, .admin-table td:first-child { text-align: left; }
+        .admin-table th:last-child, .admin-table td:last-child { text-align: right; }
+        
         .admin-table th {
             color: var(--gold);
             font-family: var(--font-heading);
-            font-size: 20px;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 1px solid rgba(201,169,110,0.2);
+        }
+        .admin-table tbody tr {
+            transition: background 0.3s ease;
+        }
+        .admin-table tbody tr:hover {
+            background: rgba(255,255,255,0.02);
         }
         .admin-card {
-            background: var(--navy-mid);
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
             padding: 40px;
-            border: 1px solid rgba(201,169,110,0.2);
-            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
         }
         .action-btn {
-            background: none;
-            border: none;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
             color: var(--cream);
             cursor: pointer;
-            margin-right: 10px;
-            transition: color 0.3s;
+            margin-left: 8px;
+            transition: all 0.3s ease;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
         .action-btn:hover {
-            color: var(--gold);
+            background: var(--gold);
+            color: var(--navy);
+            border-color: var(--gold);
+            transform: translateY(-2px);
         }
         .action-btn.delete:hover {
-            color: #ff4d4d;
+            background: #ff4d4d;
+            border-color: #ff4d4d;
+            color: white;
         }
     </style>
 </head>
