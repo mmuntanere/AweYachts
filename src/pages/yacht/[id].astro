@@ -48,14 +48,49 @@ const { yacht } = Astro.props;
       <h2 class="section-title" style="font-size: 32px;">About this <em>Yacht</em></h2>
       <p id="yacht-desc" class="section-desc" style="text-align: left; max-width: 100%; color: var(--cream); font-size: 16px; line-height: 1.8;">{yacht.description}</p>
       
-      <div style="margin-top: 60px;">
-        <h2 class="section-title" style="font-size: 32px;">Gallery</h2>
-        <div class="detail-gallery detail-gallery-grid" id="yacht-gallery">
-          {yacht.gallery.map((imgSrc) => (
-            <img src={imgSrc.startsWith('http') ? imgSrc : `/${imgSrc}`} style="width: 100%; aspect-ratio: 4/3; object-fit: cover; border: 1px solid rgba(255,255,255,0.05);" alt={`${yacht.name} interior`} loading="lazy" />
-          ))}
+        <div style="margin-top: 60px;">
+          <h2 class="section-title" style="font-size: 32px;">Gallery</h2>
+          {yacht.gallery && yacht.gallery.length > 0 ? (
+            <>
+              <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+              <div class="swiper yacht-swiper" style="width: 100%; border: 1px solid rgba(255,255,255,0.05); overflow: hidden; margin-top: 30px;">
+                <div class="swiper-wrapper">
+                  {yacht.gallery.map((imgSrc) => (
+                    <div class="swiper-slide">
+                      <img src={imgSrc.startsWith('http') ? imgSrc : `/${imgSrc}`} style="width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block;" alt={`${yacht.name} interior`} loading="lazy" />
+                    </div>
+                  ))}
+                </div>
+                <div class="swiper-pagination"></div>
+                <div class="swiper-button-prev" style="color: var(--gold);"></div>
+                <div class="swiper-button-next" style="color: var(--gold);"></div>
+              </div>
+              <style>
+                .swiper-pagination-bullet { background: #ffffff; opacity: 0.5; }
+                .swiper-pagination-bullet-active { background: var(--gold); opacity: 1; }
+                .swiper-button-next::after, .swiper-button-prev::after { font-size: 24px !important; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+                .swiper-button-next, .swiper-button-prev { background: rgba(6,16,32,0.5); width: 50px; height: 50px; border-radius: 50%; }
+              </style>
+              <script is:inline type="module">
+                import Swiper from 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.mjs'
+                new Swiper('.yacht-swiper', {
+                  loop: true,
+                  speed: 600,
+                  navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                  },
+                  pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                  },
+                });
+              </script>
+            </>
+          ) : (
+            <p style="color: var(--text-muted); font-style: italic;">No gallery images available.</p>
+          )}
         </div>
-      </div>
     </div>
 
     <div class="detail-sidebar">
