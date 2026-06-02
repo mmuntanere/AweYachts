@@ -53,11 +53,11 @@ const { yacht } = Astro.props;
           {yacht.gallery && yacht.gallery.length > 0 ? (
             <>
               <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-              <div class="swiper yacht-swiper" style="width: 100%; border: 1px solid rgba(255,255,255,0.05); overflow: hidden; margin-top: 30px;">
+              <div class="swiper yacht-swiper" style="width: 100%; border: 1px solid rgba(255,255,255,0.05); overflow: hidden; margin-top: 30px; border-radius: 4px;">
                 <div class="swiper-wrapper">
                   {yacht.gallery.map((imgSrc) => (
-                    <div class="swiper-slide">
-                      <img src={imgSrc.startsWith('http') ? imgSrc : `/${imgSrc}`} style="width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block;" alt={`${yacht.name} interior`} loading="lazy" />
+                    <div class="swiper-slide" style="background: var(--navy-mid);">
+                      <img src={imgSrc.startsWith('http') ? imgSrc : `/${imgSrc}`} style="width: 100%; height: auto; aspect-ratio: 16/9; object-fit: cover; display: block;" alt={`${yacht.name} interior`} />
                     </div>
                   ))}
                 </div>
@@ -71,19 +71,21 @@ const { yacht } = Astro.props;
                 .swiper-button-next::after, .swiper-button-prev::after { font-size: 24px !important; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
                 .swiper-button-next, .swiper-button-prev { background: rgba(6,16,32,0.5); width: 50px; height: 50px; border-radius: 50%; }
               </style>
-              <script is:inline type="module">
-                import Swiper from 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.mjs'
-                new Swiper('.yacht-swiper', {
-                  loop: true,
-                  speed: 600,
-                  navigation: {
-                    nextEl: '.swiper-button-next',
-                    prevEl: '.swiper-button-prev',
-                  },
-                  pagination: {
-                    el: '.swiper-pagination',
-                    clickable: true,
-                  },
+              <script is:inline src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+              <script is:inline>
+                document.addEventListener('DOMContentLoaded', function() {
+                  new Swiper('.yacht-swiper', {
+                    loop: true,
+                    speed: 600,
+                    navigation: {
+                      nextEl: '.swiper-button-next',
+                      prevEl: '.swiper-button-prev',
+                    },
+                    pagination: {
+                      el: '.swiper-pagination',
+                      clickable: true,
+                    },
+                  });
                 });
               </script>
             </>
