@@ -1,0 +1,78 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="AWE YACHTS — Admin Dashboard">
+  <div class="admin-main">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+      <h1 class="hero-title" style="font-size: 40px; margin: 0;">Fleet <em>Management</em></h1>
+      <a href="/admin/yacht/new" class="btn-primary" style="padding: 10px 20px;">+ Add New Yacht</a>
+    </div>
+
+    <div class="admin-card">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Price</th>
+            <th>Length</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="yachts-tbody">
+          <tr><td colspan="5" style="text-align:center;">Loading yachts...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', async () => {
+      // Wait for auth to settle
+      await new Promise(r => setTimeout(r, 200));
+
+      const { data, error } = await window.supabase.from('yachts').select('*').order('name');
+      const tbody = document.getElementById('yachts-tbody');
+      
+      if (error) {
+        tbody.innerHTML = `<tr><td colspan="5" style="color:#ff4d4d;">Error loading data: ${error.message}</td></tr>`;
+        return;
+      }
+
+      if (data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No yachts found.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = data.map(yacht => `
+        <tr>
+          <td><strong>${yacht.name}</strong></td>
+          <td>${yacht.type}</td>
+          <td>${yacht.price}</td>
+          <td>${yacht.length}</td>
+          <td>
+            <button class="action-btn" onclick="window.location.href='/admin/yacht/edit?id=${yacht.id}'" title="Edit">
+              <i class="fas fa-pen"></i>
+            </button>
+            <button class="action-btn delete" onclick="deleteYacht('${yacht.id}')" title="Delete">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    });
+
+    window.deleteYacht = async (id) => {
+      if(!confirm(`Are you sure you want to delete yacht '${id}'? This cannot be undone.`)) return;
+      
+      const { error } = await window.supabase.from('yachts').delete().eq('id', id);
+      if(error) {
+        alert('Error deleting yacht: ' + error.message);
+      } else {
+        alert('Yacht deleted successfully.');
+        window.location.reload();
+      }
+    };
+  </script>
+</AdminLayout>

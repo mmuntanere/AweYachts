@@ -1,0 +1,139 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="AWE YACHTS — New Yacht">
+  <div class="admin-main">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+      <h1 class="hero-title" style="font-size: 32px; margin: 0;">Add <em>New Yacht</em></h1>
+      <a href="/admin" class="btn-outline" style="padding: 10px 20px;">Back to Fleet</a>
+    </div>
+
+    <div class="admin-card">
+      <form id="yacht-form" onsubmit="handleSave(event)">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+          <div class="form-group">
+            <label>ID (URL Slug, e.g. azure-dream)</label>
+            <input type="text" id="yacht-id" required>
+          </div>
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" id="yacht-name" required>
+          </div>
+          <div class="form-group">
+            <label>Type (e.g. Motor Yacht)</label>
+            <input type="text" id="yacht-type" required>
+          </div>
+          <div class="form-group">
+            <label>Price (e.g. € 8,500,000)</label>
+            <input type="text" id="yacht-price">
+          </div>
+          <div class="form-group">
+            <label>Length (e.g. 45m (147'))</label>
+            <input type="text" id="yacht-length">
+          </div>
+          <div class="form-group">
+            <label>Guests (e.g. 12 Guests)</label>
+            <input type="text" id="yacht-guests">
+          </div>
+          <div class="form-group">
+            <label>Cabins (e.g. 6 Cabins)</label>
+            <input type="text" id="yacht-cabins">
+          </div>
+          <div class="form-group">
+            <label>Year (e.g. 2021)</label>
+            <input type="text" id="yacht-year">
+          </div>
+          <div class="form-group">
+            <label>Builder</label>
+            <input type="text" id="yacht-builder">
+          </div>
+          <div class="form-group">
+            <label>Speed (e.g. 22 Knots)</label>
+            <input type="text" id="yacht-speed">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="yacht-description" rows="10"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Main Image Upload</label>
+          <input type="file" id="yacht-image-file" accept="image/*">
+          <p style="font-size:12px; color:var(--text-muted); margin-top:5px;">If you select a file, it will be uploaded to Supabase Storage and used as the main image.</p>
+        </div>
+
+        <button type="submit" class="btn-primary" id="save-btn" style="width: 100%; margin-top: 20px;">Save Yacht</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    window.handleSave = async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('save-btn');
+      btn.textContent = 'Saving...';
+      btn.disabled = true;
+
+      const id = document.getElementById('yacht-id').value;
+      const fileInput = document.getElementById('yacht-image-file');
+      let main_image = 'yacht-placeholder.png'; // default fallback
+
+      // 1. Upload Image if selected
+      if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${id}-${Math.random()}.${fileExt}`;
+        const filePath = `${fileName}`;
+
+        const { error: uploadError } = await window.supabase.storage
+          .from('yacht-images')
+          .upload(filePath, file);
+
+        if (uploadError) {
+          alert('Error uploading image: ' + uploadError.message);
+          btn.textContent = 'Save Yacht';
+          btn.disabled = false;
+          return;
+        }
+
+        // Get public URL
+        const { data: { publicUrl } } = window.supabase.storage
+          .from('yacht-images')
+          .getPublicUrl(filePath);
+        
+        main_image = publicUrl;
+      }
+
+      // 2. Insert into Database
+      const payload = {
+        id,
+        name: document.getElementById('yacht-name').value,
+        type: document.getElementById('yacht-type').value,
+        price: document.getElementById('yacht-price').value,
+        length: document.getElementById('yacht-length').value,
+        guests: document.getElementById('yacht-guests').value,
+        cabins: document.getElementById('yacht-cabins').value,
+        year: document.getElementById('yacht-year').value,
+        builder: document.getElementById('yacht-builder').value,
+        speed: document.getElementById('yacht-speed').value,
+        description: document.getElementById('yacht-description').value,
+        main_image,
+        gallery: [] // empty for now
+      };
+
+      const { error } = await window.supabase.from('yachts').insert([payload]);
+
+      if (error) {
+        alert('Error saving yacht: ' + error.message);
+        btn.textContent = 'Save Yacht';
+        btn.disabled = false;
+      } else {
+        alert('Yacht successfully added!');
+        window.location.href = '/admin';
+      }
+    };
+  </script>
+</AdminLayout>

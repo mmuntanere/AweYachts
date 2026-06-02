@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AWE YACHTS — Yacht Details</title>
+  <meta name="description" content="AWE YACHTS offers an exclusive selection of luxury yachts for sale and charter across the Mediterranean and worldwide. Experience, discretion and elegance.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Raleway:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" type="image/png" href="favicon.png?v=3">
+</head>
+<body style="background: var(--navy); color: var(--cream);">
+
+  <!-- NAVBAR -->
+  <nav class="navbar scrolled" id="navbar" role="navigation" aria-label="Main navigation">
+    <div class="nav-logo">
+      <a href="index.html"><img src="logo.png" alt="AWE YACHTS — Luxury Yachts" class="nav-logo-icon"></a>
+    </div>
+    <ul class="nav-links" id="nav-links" role="menubar">
+      <li role="none"><a href="index.html#yachts" role="menuitem">Yachts</a></li>
+      <li role="none"><a href="index.html#about" role="menuitem">About</a></li>
+      <li role="none"><a href="index.html#contact" role="menuitem" class="nav-cta">Contact</a></li>
+    </ul>
+    <div class="nav-hamburger" id="hamburger" aria-label="Open menu" role="button" tabindex="0">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
+
+  <!-- MOBILE MENU -->
+  <div id="mobile-menu" style="display:none;position:fixed;inset:0;background:rgba(6,16,32,0.98);z-index:999;flex-direction:column;align-items:center;justify-content:center;gap:40px;">
+    <a href="index.html#yachts" onclick="closeMobileMenu()" style="font-family:'Cormorant',serif;font-size:28px;color:#E8DFD0;letter-spacing:5px;">Yachts</a>
+    <a href="index.html#about" onclick="closeMobileMenu()" style="font-family:'Cormorant',serif;font-size:28px;color:#E8DFD0;letter-spacing:5px;">About</a>
+    <a href="index.html#contact" onclick="closeMobileMenu()" style="font-family:'Cormorant',serif;font-size:28px;color:#C9A96E;letter-spacing:5px;">Contact</a>
+    <button onclick="closeMobileMenu()" style="position:absolute;top:30px;right:40px;background:none;border:none;color:#E8DFD0;font-size:28px;cursor:pointer;">&#x2715;</button>
+  </div>
+
+  <!-- DETAIL HERO -->
+  <section class="detail-hero" id="detail-hero" style="position: relative; padding-top: 100px; min-height: 80vh; display: flex; align-items: flex-end; padding-bottom: 60px; overflow: hidden;">
+    <div class="detail-hero-bg" style="position: absolute; inset: 0; z-index: 0;">
+      <img id="yacht-main-img" src="" alt="Yacht" style="width: 100%; height: 100%; object-fit: cover;">
+      <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(6,16,32,1) 0%, rgba(6,16,32,0.2) 60%, transparent 100%);"></div>
+    </div>
+    <div style="position: absolute; top: 120px; left: 0; width: 100%; z-index: 10;">
+      <div style="max-width: 1200px; margin: 0 auto; padding: 0 40px;">
+        <a href="index.html#yachts" class="back-link"><i class="fas fa-arrow-left"></i> Back to Fleet</a>
+      </div>
+    </div>
+    <div class="container reveal" style="position: relative; z-index: 2; width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 40px;">
+      <div class="yacht-tag" id="yacht-type" style="margin-bottom: 20px;">Loading...</div>
+      <h1 class="hero-title" id="yacht-name" style="margin-bottom: 20px; font-size: clamp(40px, 5vw, 80px);">Loading...</h1>
+      <div class="yacht-specs" id="yacht-hero-specs" style="font-size: 14px;">
+        <!-- Filled by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTENT -->
+  <section class="detail-content detail-content-grid" style="max-width: 1200px; margin: 0 auto; padding: 60px 40px;">
+    
+    <div class="detail-description reveal">
+      <h2 class="section-title" style="font-size: 32px;">About this <em>Yacht</em></h2>
+      <p id="yacht-desc" class="section-desc" style="text-align: left; max-width: 100%; color: var(--cream); font-size: 16px; line-height: 1.8;"></p>
+      
+      <div style="margin-top: 60px;">
+        <h2 class="section-title" style="font-size: 32px;">Gallery</h2>
+        <div class="detail-gallery detail-gallery-grid" id="yacht-gallery">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-sidebar reveal reveal-delay-1">
+      <div class="specs-card" style="background: var(--navy-mid); padding: 40px; border: 1px solid rgba(201,169,110,0.2);">
+        <div style="font-size: 28px; color: var(--gold); font-family: var(--font-heading); margin-bottom: 30px;" id="yacht-price"></div>
+        
+        <div class="spec-row" style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 16px 0;">
+          <span style="color: var(--text-muted);">Length</span>
+          <span id="spec-length" style="color: var(--white); font-weight: 500;"></span>
+        </div>
+        <div class="spec-row" style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 16px 0;">
+          <span style="color: var(--text-muted);">Builder</span>
+          <span id="spec-builder" style="color: var(--white); font-weight: 500;"></span>
+        </div>
+        <div class="spec-row" style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 16px 0;">
+          <span style="color: var(--text-muted);">Year</span>
+          <span id="spec-year" style="color: var(--white); font-weight: 500;"></span>
+        </div>
+        <div class="spec-row" style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 16px 0;">
+          <span style="color: var(--text-muted);">Cabins</span>
+          <span id="spec-cabins" style="color: var(--white); font-weight: 500;"></span>
+        </div>
+        <div class="spec-row" style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 16px 0;">
+          <span style="color: var(--text-muted);">Cruising Speed</span>
+          <span id="spec-speed" style="color: var(--white); font-weight: 500;"></span>
+        </div>
+
+        <a href="index.html#contact" class="nav-cta" style="display: block; text-align: center; margin-top: 40px; width: 100%;">Enquire Now</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <img src="logo.png" alt="AWE YACHTS" style="height: 48px; margin-bottom: 24px; filter: brightness(0.8);">
+        <p style="font-size: 13px; color: var(--text-muted); line-height: 1.8;">Defining the ultimate luxury yachting experience worldwide. Brokerage, charter, and management of the finest vessels.</p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Discover</h4>
+        <ul>
+          <li><a href="index.html#yachts">Featured Yachts</a></li>
+          <li><a href="index.html#about">About Us</a></li>
+          <li><a href="index.html#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="index.html#about">About Us</a></li>
+          <li><a href="index.html#contact">Contact</a></li>
+          <li><a href="legal.html">Legal Notice</a></li>
+          <li><a href="privacy.html">Privacy Policy</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 AWE YACHTS. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="data.js"></script>
+  <script>
+    // ===== LOAD DATA =====
+    const urlParams = new URLSearchParams(window.location.search);
+    const yachtId = urlParams.get('id');
+    const yacht = yachtsData[yachtId];
+
+    if(yacht) {
+      document.title = `AWE YACHTS — ${yacht.name}`;
+      document.getElementById('yacht-name').textContent = yacht.name;
+      document.getElementById('yacht-type').textContent = yacht.type;
+      document.getElementById('yacht-main-img').src = yacht.mainImage;
+      document.getElementById('yacht-desc').textContent = yacht.description;
+      document.getElementById('yacht-price').textContent = yacht.price;
+      
+      document.getElementById('spec-length').textContent = yacht.length;
+      document.getElementById('spec-builder').textContent = yacht.builder;
+      document.getElementById('spec-year').textContent = yacht.year;
+      document.getElementById('spec-cabins').textContent = yacht.cabins;
+      document.getElementById('spec-speed').textContent = yacht.speed;
+
+      document.getElementById('yacht-hero-specs').innerHTML = `
+        <span class="yacht-spec"><i class="fas fa-ruler-horizontal"></i> ${yacht.length}</span>
+        <span class="yacht-spec"><i class="fas fa-users"></i> ${yacht.guests}</span>
+        <span class="yacht-spec"><i class="fas fa-bed"></i> ${yacht.cabins}</span>
+      `;
+
+      const galleryEl = document.getElementById('yacht-gallery');
+      yacht.gallery.forEach(imgSrc => {
+        galleryEl.innerHTML += `<img src="${imgSrc}" style="width: 100%; aspect-ratio: 4/3; object-fit: cover; border: 1px solid rgba(255,255,255,0.05);" alt="${yacht.name} interior">`;
+      });
+    } else {
+      document.querySelector('.detail-content').innerHTML = '<h2>Yacht not found</h2><a href="index.html" class="btn-outline">Return Home</a>';
+    }
+
+    // ===== REVEAL ON SCROLL =====
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+    }, { threshold: 0.12 });
+    reveals.forEach(el => observer.observe(el));
+
+    // ===== HAMBURGER =====
+    const hamburger = document.getElementById('hamburger');
+    const navbar = document.getElementById('navbar');
+    const heroBg = document.querySelector('.detail-hero-bg');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    window.addEventListener('scroll', () => { 
+      navbar.classList.toggle('scrolled', window.scrollY > 60); 
+      if (window.scrollY < window.innerHeight && heroBg) {
+        heroBg.style.transform = `translateY(${window.scrollY * 0.35}px)`;
+      }
+    }, { passive: true });
+
+    hamburger.addEventListener('click', () => {
+      const isOpen = mobileMenu.style.display === 'flex';
+      mobileMenu.style.display = isOpen ? 'none' : 'flex';
+    });
+    function closeMobileMenu() { mobileMenu.style.display = 'none'; }
+  </script>
+</body>
+</html>

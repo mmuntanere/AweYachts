@@ -1,0 +1,191 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="AWE YACHTS — Edit Yacht">
+  <div class="admin-main">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+      <h1 class="hero-title" style="font-size: 32px; margin: 0;">Edit <em>Yacht</em></h1>
+      <a href="/admin" class="btn-outline" style="padding: 10px 20px;">Back to Fleet</a>
+    </div>
+
+    <div class="admin-card" id="edit-loading">
+      <p style="text-align: center;">Loading yacht data...</p>
+    </div>
+
+    <div class="admin-card" id="edit-form-container" style="display: none;">
+      <form id="yacht-form" onsubmit="handleUpdate(event)">
+        <input type="hidden" id="yacht-original-id">
+        <input type="hidden" id="yacht-original-image">
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+          <div class="form-group">
+            <label>ID (Read-only)</label>
+            <input type="text" id="yacht-id" disabled>
+          </div>
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" id="yacht-name" required>
+          </div>
+          <div class="form-group">
+            <label>Type</label>
+            <input type="text" id="yacht-type" required>
+          </div>
+          <div class="form-group">
+            <label>Price</label>
+            <input type="text" id="yacht-price">
+          </div>
+          <div class="form-group">
+            <label>Length</label>
+            <input type="text" id="yacht-length">
+          </div>
+          <div class="form-group">
+            <label>Guests</label>
+            <input type="text" id="yacht-guests">
+          </div>
+          <div class="form-group">
+            <label>Cabins</label>
+            <input type="text" id="yacht-cabins">
+          </div>
+          <div class="form-group">
+            <label>Year</label>
+            <input type="text" id="yacht-year">
+          </div>
+          <div class="form-group">
+            <label>Builder</label>
+            <input type="text" id="yacht-builder">
+          </div>
+          <div class="form-group">
+            <label>Speed</label>
+            <input type="text" id="yacht-speed">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="yacht-description" rows="10"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Update Main Image</label>
+          <div style="margin-bottom: 10px;">
+            <img id="current-image-preview" src="" style="width: 150px; border-radius: 4px; display: none;">
+          </div>
+          <input type="file" id="yacht-image-file" accept="image/*">
+          <p style="font-size:12px; color:var(--text-muted); margin-top:5px;">Leave empty to keep the current image.</p>
+        </div>
+
+        <button type="submit" class="btn-primary" id="save-btn" style="width: 100%; margin-top: 20px;">Update Yacht</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', async () => {
+      await new Promise(r => setTimeout(r, 200)); // wait for auth
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const id = urlParams.get('id');
+
+      if(!id) {
+        alert('No yacht ID provided.');
+        window.location.href = '/admin';
+        return;
+      }
+
+      const { data, error } = await window.supabase.from('yachts').select('*').eq('id', id).single();
+
+      if(error || !data) {
+        document.getElementById('edit-loading').innerHTML = '<p style="color:#ff4d4d;text-align:center;">Error loading yacht or not found.</p>';
+        return;
+      }
+
+      // Populate form
+      document.getElementById('yacht-original-id').value = data.id;
+      document.getElementById('yacht-original-image').value = data.main_image || '';
+      
+      document.getElementById('yacht-id').value = data.id;
+      document.getElementById('yacht-name').value = data.name;
+      document.getElementById('yacht-type').value = data.type;
+      document.getElementById('yacht-price').value = data.price;
+      document.getElementById('yacht-length').value = data.length;
+      document.getElementById('yacht-guests').value = data.guests;
+      document.getElementById('yacht-cabins').value = data.cabins;
+      document.getElementById('yacht-year').value = data.year;
+      document.getElementById('yacht-builder').value = data.builder;
+      document.getElementById('yacht-speed').value = data.speed;
+      document.getElementById('yacht-description').value = data.description;
+
+      if(data.main_image) {
+        const preview = document.getElementById('current-image-preview');
+        // Handle absolute URL from Supabase vs legacy local filename
+        preview.src = data.main_image.startsWith('http') ? data.main_image : `/${data.main_image}`;
+        preview.style.display = 'block';
+      }
+
+      document.getElementById('edit-loading').style.display = 'none';
+      document.getElementById('edit-form-container').style.display = 'block';
+    });
+
+    window.handleUpdate = async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('save-btn');
+      btn.textContent = 'Updating...';
+      btn.disabled = true;
+
+      const id = document.getElementById('yacht-original-id').value;
+      const fileInput = document.getElementById('yacht-image-file');
+      let main_image = document.getElementById('yacht-original-image').value;
+
+      // Upload new Image if selected
+      if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${id}-${Math.random()}.${fileExt}`;
+        
+        const { error: uploadError } = await window.supabase.storage
+          .from('yacht-images')
+          .upload(fileName, file);
+
+        if (uploadError) {
+          alert('Error uploading new image: ' + uploadError.message);
+          btn.textContent = 'Update Yacht';
+          btn.disabled = false;
+          return;
+        }
+
+        const { data: { publicUrl } } = window.supabase.storage
+          .from('yacht-images')
+          .getPublicUrl(fileName);
+        
+        main_image = publicUrl;
+      }
+
+      // Update Database
+      const payload = {
+        name: document.getElementById('yacht-name').value,
+        type: document.getElementById('yacht-type').value,
+        price: document.getElementById('yacht-price').value,
+        length: document.getElementById('yacht-length').value,
+        guests: document.getElementById('yacht-guests').value,
+        cabins: document.getElementById('yacht-cabins').value,
+        year: document.getElementById('yacht-year').value,
+        builder: document.getElementById('yacht-builder').value,
+        speed: document.getElementById('yacht-speed').value,
+        description: document.getElementById('yacht-description').value,
+        main_image
+      };
+
+      const { error } = await window.supabase.from('yachts').update(payload).eq('id', id);
+
+      if (error) {
+        alert('Error updating yacht: ' + error.message);
+        btn.textContent = 'Update Yacht';
+        btn.disabled = false;
+      } else {
+        alert('Yacht successfully updated!');
+        window.location.href = '/admin';
+      }
+    };
+  </script>
+</AdminLayout>
