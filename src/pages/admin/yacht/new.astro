@@ -13,8 +13,8 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
       <form id="yacht-form" onsubmit="handleSave(event)">
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
           <div class="form-group">
-            <label>ID (URL Slug, e.g. azure-dream)</label>
-            <input type="text" id="yacht-id" required>
+            <label>ID (URL Slug) <small style="color:var(--text-muted); font-weight:normal;">- Auto-generated</small></label>
+            <input type="text" id="yacht-id" required readonly style="background: rgba(0,0,0,0.2); cursor: not-allowed; color: var(--text-muted);">
           </div>
           <div class="form-group">
             <label>Name</label>
@@ -33,7 +33,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
             <input type="text" id="yacht-length">
           </div>
           <div class="form-group">
-            <label>Guests (e.g. 12 Guests)</label>
+            <label>Hull Material (e.g. Fiberglass)</label>
             <input type="text" id="yacht-guests">
           </div>
           <div class="form-group">
@@ -77,6 +77,15 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
   </div>
 
   <script>
+    // Auto-generate URL Slug from Name
+    document.getElementById('yacht-name')?.addEventListener('input', (e) => {
+      const name = (e.target as HTMLInputElement).value;
+      const slug = name.toLowerCase().trim()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)+/g, '');
+      (document.getElementById('yacht-id') as HTMLInputElement).value = slug;
+    });
+
     window.handleSave = async (e) => {
       e.preventDefault();
       const btn = document.getElementById('save-btn');
