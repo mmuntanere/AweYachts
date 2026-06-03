@@ -131,7 +131,27 @@ const { yacht } = Astro.props;
           </div>
         )}
 
-        <a href="/#contact" class="nav-cta" style="display: block; text-align: center; margin-top: 40px; width: 100%;">Enquire Now</a>
+        <button id="enquire-toggle-btn" class="nav-cta" style="display: block; text-align: center; margin-top: 40px; width: 100%; border: none; cursor: pointer; font-family: var(--font-main);">Enquire Now</button>
+        
+        <div id="enquire-form-container" style="display: none; margin-top: 20px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); padding: 25px 20px; border-radius: 4px;">
+          <h3 style="font-size: 16px; margin-bottom: 15px; font-weight: 400; color: var(--gold);">Request Information</h3>
+          <form id="enquire-form" novalidate>
+            <input type="hidden" name="interest" value="buy">
+            <input type="hidden" name="message" value={`I am interested in receiving more information about the yacht: ${yacht.name}.`}>
+            
+            <div style="margin-bottom: 15px;">
+              <label style="display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 6px;">Name</label>
+              <input type="text" name="name" required placeholder="Your name" style="width: 100%; padding: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: white; font-family: var(--font-main);">
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+              <label style="display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 6px;">Email</label>
+              <input type="email" name="email" required placeholder="your@email.com" style="width: 100%; padding: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: white; font-family: var(--font-main);">
+            </div>
+            
+            <button type="submit" id="enquire-submit-btn" class="btn-primary" style="width: 100%; padding: 12px; font-size: 14px;">Send Enquiry</button>
+          </form>
+        </div>
       </div>
     </div>
   </section>
@@ -144,5 +164,63 @@ const { yacht } = Astro.props;
         heroBg.style.transform = `translateY(${window.scrollY * 0.35}px)`;
       }
     }, { passive: true });
+
+    // Enquiry form logic
+    const toggleBtn = document.getElementById('enquire-toggle-btn');
+    const formContainer = document.getElementById('enquire-form-container');
+    const enquireForm = document.getElementById('enquire-form') as HTMLFormElement;
+    
+    if (toggleBtn && formContainer) {
+      toggleBtn.addEventListener('click', () => {
+        if (formContainer.style.display === 'none') {
+          formContainer.style.display = 'block';
+          toggleBtn.style.display = 'none';
+        }
+      });
+    }
+
+    if (enquireForm) {
+      enquireForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('enquire-submit-btn');
+        if(!btn) return;
+        const originalText = btn.textContent;
+        
+        btn.textContent = 'Sending...';
+        btn.style.opacity = '0.7';
+        (btn as HTMLButtonElement).disabled = true;
+
+        try {
+          const formData = new FormData(enquireForm);
+          const response = await fetch('/send_mail.php', {
+            method: 'POST',
+            body: formData
+          });
+
+          if (response.ok) {
+            btn.textContent = '✓ Sent Successfully';
+            btn.style.background = '#1a3a1a';
+            btn.style.color = '#6fcf97';
+            btn.style.border = '1px solid #6fcf97';
+            enquireForm.reset();
+          } else {
+            throw new Error('Network response error');
+          }
+        } catch (error) {
+          btn.textContent = 'X Error Sending';
+          btn.style.background = '#4a1a1a';
+          btn.style.color = '#cf6f6f';
+        }
+
+        setTimeout(() => {
+          btn.textContent = originalText;
+          btn.style.background = '';
+          btn.style.color = '';
+          btn.style.border = '';
+          btn.style.opacity = '1';
+          (btn as HTMLButtonElement).disabled = false;
+        }, 4000);
+      });
+    }
   </script>
 </Layout>
