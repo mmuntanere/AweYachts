@@ -36,69 +36,16 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
             <input type="text" id="yacht-price">
           </div>
           <div class="form-group">
-            <label>Length</label>
+            <label>Length Overall (LOA) (e.g. 45m (147'))</label>
             <input type="text" id="yacht-length">
           </div>
           <div class="form-group">
-            <label>Hull Material</label>
+            <label>Guests</label>
             <input type="text" id="yacht-guests">
           </div>
           <div class="form-group">
-            <label>Cabins</label>
-            <input type="text" id="yacht-cabins">
-          </div>
-          <div class="form-group">
-            <label>Year</label>
-            <input type="text" id="yacht-year">
-          </div>
-          <div class="form-group">
-            <label>Builder</label>
-            <input type="text" id="yacht-builder">
-          </div>
-          <div class="form-group">
-            <label>Speed</label>
-            <input type="text" id="yacht-speed">
-          </div>
-          <!-- Optional Fields -->
-          <div class="form-group">
-            <label>Guest Cabins</label>
-            <input type="text" id="yacht-guest-cabins">
-          </div>
-          <div class="form-group">
-            <label>Crew Cabins</label>
-            <input type="text" id="yacht-crew-cabins">
-          </div>
-          <div class="form-group">
-            <label>Guest Heads</label>
-            <input type="text" id="yacht-guest-heads">
-          </div>
-          <div class="form-group">
-            <label>Crew Heads</label>
-            <input type="text" id="yacht-crew-heads">
-          </div>
-          <div class="form-group">
-            <label>Beam</label>
-            <input type="text" id="yacht-beam">
-          </div>
-          <div class="form-group">
-            <label>Max Draft</label>
-            <input type="text" id="yacht-max-draft">
-          </div>
-          <div class="form-group">
-            <label>Fuel Type</label>
-            <input type="text" id="yacht-fuel-type">
-          </div>
-          <div class="form-group">
-            <label>Drive Type</label>
-            <input type="text" id="yacht-drive-type">
-          </div>
-          <div class="form-group">
-            <label>Class</label>
-            <input type="text" id="yacht-class">
-          </div>
-          <div class="form-group">
-            <label>Condition</label>
-            <input type="text" id="yacht-condition">
+            <label>Crew</label>
+            <input type="text" id="yacht-crew">
           </div>
         </div>
 
@@ -159,23 +106,10 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
       document.getElementById('yacht-name').value = data.name;
       document.getElementById('yacht-type').value = data.type;
       document.getElementById('yacht-price').value = data.price;
-      document.getElementById('yacht-length').value = data.length;
-      document.getElementById('yacht-guests').value = data.guests;
-      document.getElementById('yacht-cabins').value = data.cabins;
-      document.getElementById('yacht-year').value = data.year;
-      document.getElementById('yacht-builder').value = data.builder || '';
-      document.getElementById('yacht-speed').value = data.speed || '';
-      
-      document.getElementById('yacht-guest-cabins').value = data.guest_cabins || '';
-      document.getElementById('yacht-crew-cabins').value = data.crew_cabins || '';
-      document.getElementById('yacht-guest-heads').value = data.guest_heads || '';
-      document.getElementById('yacht-crew-heads').value = data.crew_heads || '';
-      document.getElementById('yacht-beam').value = data.beam || '';
-      document.getElementById('yacht-max-draft').value = data.max_draft || '';
-      document.getElementById('yacht-fuel-type').value = data.fuel_type || '';
-      document.getElementById('yacht-drive-type').value = data.drive_type || '';
-      document.getElementById('yacht-class').value = data.class || '';
-      document.getElementById('yacht-condition').value = data.condition || '';
+      document.getElementById('yacht-length').value = data.length || '';
+      document.getElementById('yacht-guests').value = data.guests || '';
+      document.getElementById('yacht-crew').value = data.crew_cabins || '';
+      document.getElementById('yacht-year').value = data.year || '';
 
       document.getElementById('yacht-description').value = data.description || '';
 
@@ -213,6 +147,16 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
       window.renderGallery();
     };
 
+      // Auto-format Price
+      document.getElementById('yacht-price')?.addEventListener('input', (e) => {
+        let val = e.target.value.replace(/[^0-9]/g, '');
+        if (!val) {
+          e.target.value = '';
+          return;
+        }
+        e.target.value = '€ ' + parseInt(val, 10).toLocaleString('en-US');
+      });
+
     window.handleUpdate = async (e) => {
       e.preventDefault();
       const btn = document.getElementById('save-btn');
@@ -221,7 +165,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
 
       const id = document.getElementById('yacht-original-id').value;
       const fileInput = document.getElementById('yacht-image-file');
-      let main_image = document.getElementById('yacht-original-image').value;
+      let mainImage = document.getElementById('yacht-original-image').value;
 
       // Upload new Image if selected
       if (fileInput.files.length > 0) {
@@ -244,12 +188,12 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
           .from('yacht-images')
           .getPublicUrl(fileName);
         
-        main_image = publicUrl;
+        mainImage = publicUrl;
       }
 
       // Upload new Gallery Images
       const galleryInput = document.getElementById('yacht-gallery-files');
-      let gallery = [...window.currentGallery];
+      let newGallery = [...window.currentGallery];
       if (galleryInput.files.length > 0) {
         btn.textContent = 'Uploading gallery...';
         for (let i = 0; i < galleryInput.files.length; i++) {
@@ -265,7 +209,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
             const { data: { publicUrl } } = window.supabase.storage
               .from('yacht-images')
               .getPublicUrl(fileName);
-            gallery.push(publicUrl);
+            newGallery.push(publicUrl);
           }
         }
       }
@@ -277,25 +221,11 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
         price: document.getElementById('yacht-price').value,
         length: document.getElementById('yacht-length').value,
         guests: document.getElementById('yacht-guests').value,
-        cabins: document.getElementById('yacht-cabins').value,
+        crew_cabins: document.getElementById('yacht-crew').value,
         year: document.getElementById('yacht-year').value,
-        builder: document.getElementById('yacht-builder').value,
-        speed: document.getElementById('yacht-speed').value,
-
-        guest_cabins: document.getElementById('yacht-guest-cabins').value,
-        crew_cabins: document.getElementById('yacht-crew-cabins').value,
-        guest_heads: document.getElementById('yacht-guest-heads').value,
-        crew_heads: document.getElementById('yacht-crew-heads').value,
-        beam: document.getElementById('yacht-beam').value,
-        max_draft: document.getElementById('yacht-max-draft').value,
-        fuel_type: document.getElementById('yacht-fuel-type').value,
-        drive_type: document.getElementById('yacht-drive-type').value,
-        class: document.getElementById('yacht-class').value,
-        condition: document.getElementById('yacht-condition').value,
-
         description: document.getElementById('yacht-description').value,
-        main_image,
-        gallery
+        main_image: mainImage,
+        gallery: newGallery
       };
 
       const { error } = await window.supabase.from('yachts').update(payload).eq('id', id);

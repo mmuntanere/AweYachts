@@ -4,15 +4,16 @@ export interface Props {
   name: string;
   type: string;
   length: string;
-  guests: number;
-  year?: number;
+  guests: string;
+  crew?: string;
+  year?: number | string;
   price: string;
   image: string;
   tags?: string[];
   delay?: number;
 }
 
-const { id, name, type, length, guests, year, price, image, tags = [], delay = 0 } = Astro.props;
+const { id, name, type, length, guests, crew, year, price, image, tags = [], delay = 0 } = Astro.props;
 
 // Compute badge display logic based on tags or type
 let displayTag = type;
@@ -32,8 +33,8 @@ const delayClass = delay === 1 ? 'reveal-delay-1' : delay === 2 ? 'reveal-delay-
       <div class="yacht-name">{name}</div>
       <div class="yacht-specs">
         <span class="yacht-spec"><i class="fas fa-ruler-horizontal"></i> {length}</span>
-        <span class="yacht-spec"><i class="fas fa-layer-group"></i> {guests}</span>
-        {year && <span class="yacht-spec"><i class="fas fa-anchor"></i> {year}</span>}
+        <span class="yacht-spec"><i class="fas fa-user-friends"></i> {guests}</span>
+        {crew && <span class="yacht-spec"><i class="fas fa-users"></i> {crew}</span>}
       </div>
       <div class="yacht-price">{price}</div>
     </div>

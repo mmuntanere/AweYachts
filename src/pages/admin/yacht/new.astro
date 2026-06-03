@@ -29,69 +29,16 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
             <input type="text" id="yacht-price">
           </div>
           <div class="form-group">
-            <label>Length (e.g. 45m (147'))</label>
+            <label>Length Overall (LOA) (e.g. 45m (147'))</label>
             <input type="text" id="yacht-length">
           </div>
           <div class="form-group">
-            <label>Hull Material (e.g. Fiberglass)</label>
+            <label>Guests</label>
             <input type="text" id="yacht-guests">
           </div>
           <div class="form-group">
-            <label>Cabins (e.g. 6 Cabins)</label>
-            <input type="text" id="yacht-cabins">
-          </div>
-          <div class="form-group">
-            <label>Year (e.g. 2021)</label>
-            <input type="text" id="yacht-year">
-          </div>
-          <div class="form-group">
-            <label>Builder</label>
-            <input type="text" id="yacht-builder">
-          </div>
-          <div class="form-group">
-            <label>Speed (e.g. 22 Knots)</label>
-            <input type="text" id="yacht-speed">
-          </div>
-          <!-- Optional Fields -->
-          <div class="form-group">
-            <label>Guest Cabins</label>
-            <input type="text" id="yacht-guest-cabins">
-          </div>
-          <div class="form-group">
-            <label>Crew Cabins</label>
-            <input type="text" id="yacht-crew-cabins">
-          </div>
-          <div class="form-group">
-            <label>Guest Heads</label>
-            <input type="text" id="yacht-guest-heads">
-          </div>
-          <div class="form-group">
-            <label>Crew Heads</label>
-            <input type="text" id="yacht-crew-heads">
-          </div>
-          <div class="form-group">
-            <label>Beam</label>
-            <input type="text" id="yacht-beam">
-          </div>
-          <div class="form-group">
-            <label>Max Draft</label>
-            <input type="text" id="yacht-max-draft">
-          </div>
-          <div class="form-group">
-            <label>Fuel Type</label>
-            <input type="text" id="yacht-fuel-type">
-          </div>
-          <div class="form-group">
-            <label>Drive Type</label>
-            <input type="text" id="yacht-drive-type">
-          </div>
-          <div class="form-group">
-            <label>Class</label>
-            <input type="text" id="yacht-class">
-          </div>
-          <div class="form-group">
-            <label>Condition</label>
-            <input type="text" id="yacht-condition">
+            <label>Crew</label>
+            <input type="text" id="yacht-crew">
           </div>
         </div>
 
@@ -125,6 +72,16 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/(^-|-$)+/g, '');
       (document.getElementById('yacht-id') as HTMLInputElement).value = slug;
+    });
+
+    // Auto-format Price
+    document.getElementById('yacht-price')?.addEventListener('input', (e) => {
+      let val = (e.target as HTMLInputElement).value.replace(/[^0-9]/g, '');
+      if (!val) {
+        (e.target as HTMLInputElement).value = '';
+        return;
+      }
+      (e.target as HTMLInputElement).value = '€ ' + parseInt(val, 10).toLocaleString('en-US');
     });
 
     window.handleSave = async (e) => {
@@ -187,35 +144,21 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
       }
 
       // 3. Insert into Database
-      const payload = {
+      const record = {
         id,
         name: document.getElementById('yacht-name').value,
         type: document.getElementById('yacht-type').value,
         price: document.getElementById('yacht-price').value,
         length: document.getElementById('yacht-length').value,
         guests: document.getElementById('yacht-guests').value,
-        cabins: document.getElementById('yacht-cabins').value,
+        crew_cabins: document.getElementById('yacht-crew').value,
         year: document.getElementById('yacht-year').value,
-        builder: document.getElementById('yacht-builder').value,
-        speed: document.getElementById('yacht-speed').value,
-        
-        guest_cabins: document.getElementById('yacht-guest-cabins').value,
-        crew_cabins: document.getElementById('yacht-crew-cabins').value,
-        guest_heads: document.getElementById('yacht-guest-heads').value,
-        crew_heads: document.getElementById('yacht-crew-heads').value,
-        beam: document.getElementById('yacht-beam').value,
-        max_draft: document.getElementById('yacht-max-draft').value,
-        fuel_type: document.getElementById('yacht-fuel-type').value,
-        drive_type: document.getElementById('yacht-drive-type').value,
-        class: document.getElementById('yacht-class').value,
-        condition: document.getElementById('yacht-condition').value,
-
         description: document.getElementById('yacht-description').value,
         main_image,
         gallery
       };
 
-      const { error } = await window.supabase.from('yachts').insert([payload]);
+      const { error } = await window.supabase.from('yachts').insert([record]);
 
       if (error) {
         alert('Error saving yacht: ' + error.message);
