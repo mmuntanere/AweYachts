@@ -74,7 +74,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
           </div>
           <label style="font-size: 14px; margin-top: 10px;">Add New Gallery Images</label>
           <input type="file" id="yacht-gallery-files" accept="image/*" multiple>
-          <p style="font-size:12px; color:var(--text-muted); margin-top:5px;">Select multiple files to add to the existing gallery.</p>
+          <p style="font-size:12px; color:var(--text-muted); margin-top:5px;">Select multiple files to add to the existing gallery. (Note: Save the yacht first to reorder newly added images).</p>
         </div>
 
         <button type="submit" class="btn-primary" id="save-btn" style="width: 100%; margin-top: 20px;">Update Yacht</button>
@@ -139,11 +139,35 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
       }
       container.innerHTML = window.currentGallery.map((img, index) => {
         const src = img.startsWith('http') ? img : `/${img}`;
-        return `<div style="position:relative; display:inline-block;">
-          <img src="${src}" style="width:100px; height:75px; object-fit:cover; border-radius:4px; border: 1px solid rgba(255,255,255,0.1);">
-          <button type="button" onclick="removeGalleryImage(${index})" style="position:absolute; top:-8px; right:-8px; background:#ff4d4d; color:white; border:none; border-radius:50%; width:24px; height:24px; cursor:pointer; font-weight:bold; display:flex; align-items:center; justify-content:center; box-shadow: 0 2px 5px rgba(0,0,0,0.5);">&times;</button>
+        return `<div draggable="true" ondragstart="handleDragStart(event, ${index})" ondragover="handleDragOver(event)" ondrop="handleDrop(event, ${index})" ondragend="handleDragEnd(event)" style="position:relative; display:inline-block; cursor: grab;">
+          <img src="${src}" style="width:100px; height:75px; object-fit:cover; border-radius:4px; border: 1px solid rgba(255,255,255,0.1); pointer-events: none;">
+          <button type="button" onclick="removeGalleryImage(${index})" style="position:absolute; top:-8px; right:-8px; background:#ff4d4d; color:white; border:none; border-radius:50%; width:24px; height:24px; cursor:pointer; font-weight:bold; display:flex; align-items:center; justify-content:center; box-shadow: 0 2px 5px rgba(0,0,0,0.5); z-index: 10;">&times;</button>
         </div>`;
       }).join('');
+    };
+
+    window.handleDragStart = (e, index) => {
+      e.dataTransfer.setData('text/plain', index);
+      e.target.style.opacity = '0.5';
+    };
+    
+    window.handleDragOver = (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+    };
+
+    window.handleDrop = (e, targetIndex) => {
+      e.preventDefault();
+      const sourceIndex = parseInt(e.dataTransfer.getData('text/plain'), 10);
+      if (sourceIndex === targetIndex || isNaN(sourceIndex)) return;
+
+      const item = window.currentGallery.splice(sourceIndex, 1)[0];
+      window.currentGallery.splice(targetIndex, 0, item);
+      window.renderGallery();
+    };
+
+    window.handleDragEnd = (e) => {
+      e.target.style.opacity = '1';
     };
 
     window.removeGalleryImage = (index) => {
