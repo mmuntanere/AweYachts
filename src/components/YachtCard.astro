@@ -11,9 +11,10 @@ export interface Props {
   image: string;
   tags?: string[];
   delay?: number;
+  widthStyle?: string;
 }
 
-const { id, name, type, length, guests, crew, year, price, image, tags = [], delay = 0 } = Astro.props;
+const { id, name, type, length, guests, crew, year, price, image, tags = [], delay = 0, widthStyle = 'normal' } = Astro.props;
 
 // Compute badge display logic based on tags or type
 let displayTag = type;
@@ -24,7 +25,7 @@ if (tags.includes('performance')) displayTag += ' · Performance';
 const delayClass = delay === 1 ? 'reveal-delay-1' : delay === 2 ? 'reveal-delay-2' : '';
 ---
 
-<div class={`yacht-card reveal ${delayClass}`} data-type={type.toLowerCase().replace(' yacht', '')}>
+<div class={`yacht-card yacht-width-${widthStyle} reveal ${delayClass}`} data-type={type.toLowerCase().replace(' yacht', '')}>
   <a href={`/yacht/${id}`} style="display:block; width:100%; height:100%;">
     <img src={image} alt={`${name} - ${length} ${type}`} loading="lazy">
     <div class="yacht-card-btn" aria-label="View details"><i class="fas fa-arrow-right"></i></div>

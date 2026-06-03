@@ -193,12 +193,9 @@ section { padding: 120px 60px; }
   height: 340px;
   flex-grow: 1;
 }
-/* Varying widths logic using flex-basis */
-.yacht-card:nth-child(5n + 1) { flex-basis: 45%; }
-.yacht-card:nth-child(5n + 2) { flex-basis: 25%; }
-.yacht-card:nth-child(5n + 3) { flex-basis: 25%; }
-.yacht-card:nth-child(5n + 4) { flex-basis: 30%; }
-.yacht-card:nth-child(5n + 5) { flex-basis: 65%; }
+/* Customizable widths */
+.yacht-width-normal { flex-basis: 30%; }
+.yacht-width-wide { flex-basis: 65%; }
 
 /* When filtered, we reset to a more uniform width to avoid weird single giant images */
 .yachts-grid.filtered .yacht-card {

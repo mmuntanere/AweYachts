@@ -44,6 +44,13 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
             <label>Year (e.g. 2021)</label>
             <input type="text" id="yacht-year">
           </div>
+          <div class="form-group">
+            <label>Grid Width (Home Page)</label>
+            <select id="yacht-width-style" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: var(--white); font-family: var(--font-main);">
+              <option value="normal">Normal (30% width)</option>
+              <option value="wide">Wide (65% width)</option>
+            </select>
+          </div>
         </div>
 
         <div class="form-group">
@@ -157,6 +164,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
         guests: document.getElementById('yacht-guests').value,
         crew_cabins: document.getElementById('yacht-crew').value,
         year: document.getElementById('yacht-year').value,
+        width_style: document.getElementById('yacht-width-style').value,
         description: document.getElementById('yacht-description').value,
         main_image,
         gallery
