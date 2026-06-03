@@ -23,7 +23,7 @@ const { yacht } = Astro.props;
   <!-- DETAIL HERO -->
   <section class="detail-hero" id="detail-hero" style="position: relative; padding-top: 100px; min-height: 80vh; display: flex; align-items: flex-end; padding-bottom: 60px; overflow: hidden;">
     <div class="detail-hero-bg js-parallax" style="position: absolute; inset: 0; z-index: 0; top: -20%; height: 140%;">
-      <img id="yacht-main-img" src={yacht.main_image.startsWith('http') ? yacht.main_image : `/${yacht.main_image}`} alt={yacht.name} style="width: 100%; height: 100%; object-fit: cover;">
+      <img id="yacht-main-img" src={yacht.main_image.startsWith('http') ? yacht.main_image : `/${yacht.main_image}`} alt={yacht.name} style={`width: 100%; height: 100%; object-fit: cover; object-position: center ${yacht.image_position || 'center'};`}>
       <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(6,16,32,1) 0%, rgba(6,16,32,0.2) 60%, transparent 100%);"></div>
     </div>
     <div style="position: absolute; top: 120px; left: 0; width: 100%; z-index: 10;">
