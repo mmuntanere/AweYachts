@@ -23,6 +23,28 @@ const descriptionContent = lang === 'es' && yacht.description_es
 const seoDescription = descriptionContent 
   ? (descriptionContent.substring(0, 150) + (descriptionContent.length > 150 ? "..." : "")) 
   : `Luxury ${yacht.type} yacht available. LOA: ${yacht.length}, Guests: ${yacht.guests}.`;
+
+// Build Schema.org structured data for a Product (Yacht)
+const priceNumeric = yacht.price ? yacht.price.replace(/[^0-9]/g, '') : "0";
+const schemaData = {
+  "@context": "https://schema.org/",
+  "@type": "Product",
+  "name": yacht.name,
+  "image": yacht.main_image.startsWith('http') ? yacht.main_image : `https://aweyachts.com/${yacht.main_image}`,
+  "description": seoDescription,
+  "brand": {
+    "@type": "Brand",
+    "name": yacht.type
+  },
+  "offers": {
+    "@type": "Offer",
+    "url": Astro.url.href,
+    "priceCurrency": "EUR",
+    "price": priceNumeric,
+    "itemCondition": "https://schema.org/UsedCondition",
+    "availability": "https://schema.org/InStock"
+  }
+};
 ---
 
 <Layout 
@@ -31,6 +53,8 @@ const seoDescription = descriptionContent
   image={yacht.image}
   lang={lang}
 >
+  <script type="application/ld+json" set:html={JSON.stringify(schemaData)} />
+
   <!-- DETAIL HERO -->
   <section class="detail-hero" id="detail-hero" style="position: relative; padding-top: 100px; min-height: 80vh; display: flex; align-items: flex-end; padding-bottom: 60px; overflow: hidden;">
     <div class="detail-hero-bg js-parallax" style="position: absolute; inset: 0; z-index: 0; top: -20%; height: 120%;">
