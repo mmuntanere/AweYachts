@@ -38,11 +38,6 @@ if (error) console.error("Error fetching yachts", error);
         <div class="section-tag">{t('yachts.tag')}</div>
         <h2 class="section-title" set:html={t('yachts.title')} />
       </div>
-      <div class="yachts-filters">
-        <button class="filter-btn active" data-filter="all">{t('yachts.filter.all')}</button>
-        <button class="filter-btn" data-filter="motor">{t('yachts.filter.motor')}</button>
-        <button class="filter-btn" data-filter="sail">{t('yachts.filter.sail')}</button>
-      </div>
     </div>
 
     <div class="yachts-grid" id="yachts-grid">
