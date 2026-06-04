@@ -1,0 +1,225 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ContactForm from '../ContactForm.astro';
+import { supabase } from '../../lib/supabase';
+import { getLangFromUrl, useTranslations, getRelativeLocaleUrl, defaultLang } from '../../i18n/ui';
+
+export interface Props {
+  yacht: any;
+  lang?: any;
+}
+
+const { yacht, lang = defaultLang } = Astro.props;
+const t = useTranslations(lang);
+const basePath = getRelativeLocaleUrl(lang);
+
+const descriptionContent = lang === 'es' && yacht.description_es 
+  ? yacht.description_es 
+  : lang === 'de' && yacht.description_de 
+    ? yacht.description_de 
+    : yacht.description;
+
+// Use yacht's description if available, otherwise fallback to specs summary
+const seoDescription = descriptionContent 
+  ? (descriptionContent.substring(0, 150) + (descriptionContent.length > 150 ? "..." : "")) 
+  : `Luxury ${yacht.type} yacht available. LOA: ${yacht.length}, Guests: ${yacht.guests}.`;
+---
+
+<Layout 
+  title={`AWE YACHTS — ${yacht.name}`}
+  description={seoDescription}
+  image={yacht.image}
+  lang={lang}
+>
+  <!-- DETAIL HERO -->
+  <section class="detail-hero" id="detail-hero" style="position: relative; padding-top: 100px; min-height: 80vh; display: flex; align-items: flex-end; padding-bottom: 60px; overflow: hidden;">
+    <div class="detail-hero-bg js-parallax" style="position: absolute; inset: 0; z-index: 0; top: -20%; height: 120%;">
+      <img id="yacht-main-img" src={yacht.main_image.startsWith('http') ? yacht.main_image : `/${yacht.main_image}`} alt={yacht.name} style={`width: 100%; height: 100%; object-fit: cover; object-position: center ${yacht.image_position || 'center'};`}>
+      <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(6,16,32,1) 0%, rgba(6,16,32,0.2) 60%, transparent 100%);"></div>
+    </div>
+    <div style="position: absolute; top: 120px; left: 0; width: 100%; z-index: 10;">
+      <div style="max-width: 1200px; margin: 0 auto; padding: 0 40px;">
+        <a href={basePath + "/#yachts"} class="back-link"><i class="fas fa-arrow-left"></i> {t('detail.back')}</a>
+      </div>
+    </div>
+    <div class="container reveal" style="position: relative; z-index: 2; width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 40px;">
+      <h1 class="hero-title" id="yacht-name" style="margin-bottom: 20px; font-size: clamp(40px, 5vw, 80px);">{yacht.name}</h1>
+      <div class="yacht-specs" id="yacht-hero-specs" style="font-size: 14px;">
+        <span class="yacht-spec"><i class="fas fa-ruler-horizontal"></i> {yacht.length}</span>
+        <span class="yacht-spec"><i class="fas fa-user-friends"></i> {yacht.guests} {t('detail.guests')}</span>
+        {yacht.crew_cabins && <span class="yacht-spec"><i class="fas fa-users"></i> {yacht.crew_cabins} {t('detail.crew')}</span>}
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTENT -->
+  <section class="detail-content detail-content-grid" style="max-width: 1200px; margin: 0 auto; padding: 60px 40px;">
+    
+    <div class="detail-description" style="min-width: 0;">
+      <h2 class="section-title" style="font-size: 32px;">{t('detail.about')}</h2>
+      <p id="yacht-desc" class="section-desc" style="text-align: left; max-width: 100%; color: var(--cream); font-size: 16px; line-height: 1.8;">{descriptionContent}</p>
+      
+        <div style="margin-top: 60px;">
+          <h2 class="section-title" style="font-size: 32px;">{t('detail.gallery')}</h2>
+          {yacht.gallery && yacht.gallery.length > 0 ? (
+            <>
+              <style is:global>
+                @import url('https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css');
+              </style>
+              <div class="swiper yacht-swiper" style="width: 100%; border: 1px solid rgba(255,255,255,0.05); overflow: hidden; margin-top: 30px; border-radius: 4px;">
+                <div class="swiper-wrapper">
+                  {yacht.gallery.map((imgSrc) => (
+                    <div class="swiper-slide" style="background: var(--navy-mid);">
+                      <img src={imgSrc.startsWith('http') ? imgSrc : `/${imgSrc}`} style="width: 100%; height: auto; aspect-ratio: 16/9; object-fit: cover; display: block;" alt={`${yacht.name} interior`} />
+                    </div>
+                  ))}
+                </div>
+                <div class="swiper-pagination"></div>
+                <div class="swiper-button-prev" style="color: var(--gold);"></div>
+                <div class="swiper-button-next" style="color: var(--gold);"></div>
+              </div>
+              <style>
+                .swiper-pagination-bullet { background: #ffffff; opacity: 0.5; }
+                .swiper-pagination-bullet-active { background: var(--gold); opacity: 1; }
+                .swiper-button-next::after, .swiper-button-prev::after { font-size: 24px !important; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+                .swiper-button-next, .swiper-button-prev { background: rgba(6,16,32,0.5); width: 50px; height: 50px; border-radius: 50%; }
+              </style>
+              <script is:inline src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+              <script is:inline>
+                (function() {
+                  // Fallback for if Swiper fails to load
+                  if (typeof Swiper === 'undefined') {
+                    console.error('Swiper not loaded');
+                    document.querySelector('.yacht-swiper').style.display = 'block';
+                    document.querySelector('.swiper-wrapper').style.display = 'block';
+                    return;
+                  }
+                  new Swiper('.yacht-swiper', {
+                    loop: true,
+                    speed: 600,
+                    navigation: {
+                      nextEl: '.swiper-button-next',
+                      prevEl: '.swiper-button-prev',
+                    },
+                    pagination: {
+                      el: '.swiper-pagination',
+                      clickable: true,
+                    },
+                  });
+                })();
+              </script>
+            </>
+          ) : (
+            <p style="color: var(--text-muted); font-style: italic;">{t('detail.no_gallery')}</p>
+          )}
+        </div>
+    </div>
+
+    <div class="detail-sidebar">
+      <div class="specs-card" style="background: var(--navy-mid); padding: 40px; border: 1px solid rgba(201,169,110,0.2);">
+        <div style="font-size: 28px; color: var(--gold); font-family: var(--font-heading); margin-bottom: 30px;" id="yacht-price">{yacht.price}</div>
+        
+        <div class="detail-block" style="margin-bottom: 30px;">
+          <h2 class="detail-block-title" style="font-size: 18px; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">{t('detail.specs')}</h2>
+          <div class="spec-row" style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 10px 0;">
+            <span style="color: var(--text-muted);">{t('detail.model')}</span>
+            <span style="color: var(--white); font-weight: 500;">{yacht.type}</span>
+          </div>
+          <div class="spec-row" style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 10px 0;">
+            <span style="color: var(--text-muted);">{t('detail.year')}</span>
+            <span style="color: var(--white); font-weight: 500;">{yacht.year}</span>
+          </div>
+          <div class="spec-row" style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 10px 0;">
+            <span style="color: var(--text-muted);">{t('detail.loa')}</span>
+            <span style="color: var(--white); font-weight: 500;">{yacht.length}</span>
+          </div>
+          <div class="spec-row" style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 10px 0;">
+            <span style="color: var(--text-muted);">{t('detail.guests')}</span>
+            <span style="color: var(--white); font-weight: 500;">{yacht.guests}</span>
+          </div>
+          {yacht.crew_cabins && (
+            <div class="spec-row" style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 10px 0;">
+              <span style="color: var(--text-muted);">{t('detail.crew')}</span>
+              <span style="color: var(--white); font-weight: 500;">{yacht.crew_cabins}</span>
+            </div>
+          )}
+        </div>
+
+        <button id="enquire-toggle-btn" class="btn-outline" style="display: block; text-align: center; width: 100%; border-radius: 4px;">{t('detail.btn.enquire')}</button>
+        
+        <div id="enquire-form-container" style="display: none; margin-top: 20px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); padding: 25px 20px; border-radius: 4px;">
+          <h2 class="detail-block-title" id="enquire" style="font-size: 16px; margin-bottom: 15px; font-weight: 400; color: var(--gold);">{t('detail.form.title')}</h2>
+          <ContactForm lang={lang} />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Parallax logic
+    const heroBg = document.querySelector('.js-parallax') as HTMLElement;
+    window.addEventListener('scroll', () => {
+      if (window.scrollY < window.innerHeight && heroBg) {
+        heroBg.style.transform = `translateY(${window.scrollY * 0.35}px)`;
+      }
+    }, { passive: true });
+
+    // Enquiry form logic
+    const toggleBtn = document.getElementById('enquire-toggle-btn');
+    const formContainer = document.getElementById('enquire-form-container');
+    const enquireForm = document.getElementById('enquire-form') as HTMLFormElement;
+    
+    if (toggleBtn && formContainer) {
+      toggleBtn.addEventListener('click', () => {
+        if (formContainer.style.display === 'none') {
+          formContainer.style.display = 'block';
+          toggleBtn.style.display = 'none';
+        }
+      });
+    }
+
+    if (enquireForm) {
+      enquireForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('enquire-submit-btn');
+        if(!btn) return;
+        const originalText = btn.textContent;
+        
+        btn.textContent = 'Sending...';
+        btn.style.opacity = '0.7';
+        (btn as HTMLButtonElement).disabled = true;
+
+        try {
+          const formData = new FormData(enquireForm);
+          const response = await fetch('/send_mail.php', {
+            method: 'POST',
+            body: formData
+          });
+
+          if (response.ok) {
+            btn.textContent = '✓ Sent Successfully';
+            btn.style.background = '#1a3a1a';
+            btn.style.color = '#6fcf97';
+            btn.style.border = '1px solid #6fcf97';
+            enquireForm.reset();
+          } else {
+            throw new Error('Network response error');
+          }
+        } catch (error) {
+          btn.textContent = 'X Error Sending';
+          btn.style.background = '#4a1a1a';
+          btn.style.color = '#cf6f6f';
+        }
+
+        setTimeout(() => {
+          btn.textContent = originalText;
+          btn.style.background = '';
+          btn.style.color = '';
+          btn.style.border = '';
+          btn.style.opacity = '1';
+          (btn as HTMLButtonElement).disabled = false;
+        }, 4000);
+      });
+    }
+  </script>
+</Layout>

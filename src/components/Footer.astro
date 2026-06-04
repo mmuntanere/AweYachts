@@ -1,4 +1,8 @@
 ---
+import { getLangFromUrl, useTranslations, defaultLang } from '../i18n/ui';
+
+const { lang = defaultLang } = Astro.props;
+const t = useTranslations(lang);
 ---
 <footer role="contentinfo">
   <div class="footer-top">
@@ -6,7 +10,7 @@
       <div class="nav-logo">
         <img src="/logo.png" alt="AWE YACHTS" class="footer-logo-img">
       </div>
-      <p class="footer-desc">AWE YACHTS is the reference broker for luxury yacht sales. Experience, discretion and excellence in every transaction.</p>
+      <p class="footer-desc">{t('footer.desc')}</p>
       <div class="footer-social">
         <a href="#" class="social-btn" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
         <a href="#" class="social-btn" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
@@ -34,17 +38,17 @@
       </ul>
     </div>
     <div class="footer-col">
-      <h4>Company</h4>
+      <h4>{t('footer.quicklinks')}</h4>
       <ul>
-        <li><a href="/#about">About Us</a></li>
-        <li><a href="/#contact">Contact</a></li>
-        <li><a href="/legal">Legal Notice</a></li>
-        <li><a href="/privacy">Privacy Policy</a></li>
+        <li><a href="/#about">{t('nav.about')}</a></li>
+        <li><a href="/#contact">{t('nav.contact')}</a></li>
+        <li><a href="/legal">{t('footer.legal')}</a></li>
+        <li><a href="/privacy">{t('footer.privacy')}</a></li>
       </ul>
     </div>
   </div>
   <div class="footer-bottom">
-    <p>© 2026 AWE YACHTS. All rights reserved.</p>
-    <p>Crafted with <i class="fas fa-heart" style="color:#C9A96E;margin:0 4px;"></i> for lovers of the sea</p>
+    <p>© 2026 AWE YACHTS. {t('footer.rights')}</p>
+    <p>Crafted with <i class="fas fa-heart" style="color:#C9A96E;margin:0 4px;"></i></p>
   </div>
 </footer>

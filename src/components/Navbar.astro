@@ -1,14 +1,26 @@
 ---
+import { getLangFromUrl, useTranslations, getRelativeLocaleUrl, defaultLang } from '../i18n/ui';
+
+const { lang = defaultLang } = Astro.props;
+const t = useTranslations(lang);
+const basePath = getRelativeLocaleUrl(lang);
 ---
 <!-- NAVBAR -->
 <nav class="navbar" id="navbar" role="navigation" aria-label="Main navigation">
   <div class="nav-logo">
-    <a href="/"><img src="/logo.png" alt="AWE YACHTS — Luxury Yachts" class="nav-logo-icon"></a>
+    <a href={basePath}><img src="/logo.png" alt="AWE YACHTS — Luxury Yachts" class="nav-logo-icon"></a>
   </div>
   <ul class="nav-links" id="nav-links" role="menubar">
-    <li role="none"><a href="/#yachts" role="menuitem">Yachts</a></li>
-    <li role="none"><a href="/#about" role="menuitem">About</a></li>
-    <li role="none"><a href="/#contact" role="menuitem" class="nav-cta">Contact</a></li>
+    <li role="none"><a href={`${basePath}#yachts`} role="menuitem">{t('nav.yachts')}</a></li>
+    <li role="none"><a href={`${basePath}#about`} role="menuitem">{t('nav.about')}</a></li>
+    <li role="none"><a href={`${basePath}#contact`} role="menuitem" class="nav-cta">{t('nav.contact')}</a></li>
+    
+    {/* Language Switcher */}
+    <li role="none" class="lang-switcher" style="margin-left: 20px; display: flex; gap: 10px; font-size: 11px; letter-spacing: 2px;">
+      <a href="/" onclick="localStorage.setItem('langSelected', 'true')" style={lang === 'en' ? 'color: var(--gold);' : ''}>EN</a>
+      <a href="/es/" onclick="localStorage.setItem('langSelected', 'true')" style={lang === 'es' ? 'color: var(--gold);' : ''}>ES</a>
+      <a href="/de/" onclick="localStorage.setItem('langSelected', 'true')" style={lang === 'de' ? 'color: var(--gold);' : ''}>DE</a>
+    </li>
   </ul>
   <div class="nav-hamburger" id="hamburger" aria-label="Open menu" role="button" tabindex="0">
     <span></span><span></span><span></span>
@@ -17,10 +29,16 @@
 
 <!-- MOBILE MENU -->
 <div id="mobile-menu" style="display:none;position:fixed;inset:0;background:rgba(6,16,32,0.98);z-index:999;flex-direction:column;align-items:center;justify-content:center;gap:40px;">
-  <a href="/#yachts" onclick="closeMobileMenu()" style="font-family:'Cinzel',serif;font-size:28px;color:#E8DFD0;letter-spacing:5px;">Yachts</a>
-  <a href="/#services" onclick="closeMobileMenu()" style="font-family:'Cinzel',serif;font-size:28px;color:#E8DFD0;letter-spacing:5px;">Services</a>
-  <a href="/#about" onclick="closeMobileMenu()" style="font-family:'Cinzel',serif;font-size:28px;color:#E8DFD0;letter-spacing:5px;">About</a>
-  <a href="/#contact" onclick="closeMobileMenu()" style="font-family:'Cinzel',serif;font-size:28px;color:#C9A96E;letter-spacing:5px;">Contact</a>
+  <a href={`${basePath}#yachts`} onclick="closeMobileMenu()" style="font-family:var(--font-heading);font-size:28px;color:#E8DFD0;letter-spacing:5px;">{t('nav.yachts')}</a>
+  <a href={`${basePath}#about`} onclick="closeMobileMenu()" style="font-family:var(--font-heading);font-size:28px;color:#E8DFD0;letter-spacing:5px;">{t('nav.about')}</a>
+  <a href={`${basePath}#contact`} onclick="closeMobileMenu()" style="font-family:var(--font-heading);font-size:28px;color:#C9A96E;letter-spacing:5px;">{t('nav.contact')}</a>
+  
+  <div style="display: flex; gap: 20px; margin-top: 20px; font-size: 14px; letter-spacing: 3px;">
+    <a href="/" onclick="localStorage.setItem('langSelected', 'true')" style={lang === 'en' ? 'color: var(--gold);' : 'color: var(--cream);'}>EN</a>
+    <a href="/es/" onclick="localStorage.setItem('langSelected', 'true')" style={lang === 'es' ? 'color: var(--gold);' : 'color: var(--cream);'}>ES</a>
+    <a href="/de/" onclick="localStorage.setItem('langSelected', 'true')" style={lang === 'de' ? 'color: var(--gold);' : 'color: var(--cream);'}>DE</a>
+  </div>
+  
   <button onclick="closeMobileMenu()" style="position:absolute;top:30px;right:40px;background:none;border:none;color:#E8DFD0;font-size:28px;cursor:pointer;">&#x2715;</button>
 </div>
 

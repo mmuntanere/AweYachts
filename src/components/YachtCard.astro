@@ -1,4 +1,6 @@
 ---
+import { getLangFromUrl, useTranslations, getRelativeLocaleUrl, defaultLang } from '../i18n/ui';
+
 export interface Props {
   id: string;
   name: string;
@@ -13,9 +15,13 @@ export interface Props {
   delay?: number;
   widthStyle?: string;
   imagePosition?: string;
+  lang?: keyof typeof ui;
 }
 
-const { id, name, type, length, guests, crew, year, price, image, tags = [], delay = 0, widthStyle = 'normal', imagePosition = 'center' } = Astro.props;
+const { id, name, type, length, guests, crew, year, price, image, tags = [], delay = 0, widthStyle = 'normal', imagePosition = 'center', lang = defaultLang } = Astro.props;
+
+const t = useTranslations(lang);
+const basePath = getRelativeLocaleUrl(lang);
 
 // Compute badge display logic based on tags or type
 let displayTag = type;
@@ -27,7 +33,7 @@ const delayClass = delay === 1 ? 'reveal-delay-1' : delay === 2 ? 'reveal-delay-
 ---
 
 <div class={`yacht-card yacht-width-${widthStyle} reveal ${delayClass}`} data-type={type.toLowerCase().replace(' yacht', '')}>
-  <a href={`/yacht/${id}`} style="display:block; width:100%; height:100%;">
+  <a href={`${basePath}yacht/${id}`} style="display:block; width:100%; height:100%;">
     <img src={image} alt={`${name} - ${length} ${type}`} loading="lazy" style={`object-position: center ${imagePosition};`}>
     <div class="yacht-card-btn" aria-label="View details"><i class="fas fa-arrow-right"></i></div>
     <div class="yacht-card-overlay">

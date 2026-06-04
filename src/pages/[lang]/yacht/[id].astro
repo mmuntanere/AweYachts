@@ -1,0 +1,30 @@
+---
+import YachtDetail from '../../../components/pages/YachtDetail.astro';
+import { supabase } from '../../../lib/supabase';
+
+export async function getStaticPaths() {
+  const { data: yachts, error } = await supabase.from('yachts').select('*').neq('is_deleted', true);
+  if (error) {
+    console.error('Error fetching yachts for static paths:', error);
+    return [];
+  }
+  
+  const langs = ['es', 'de'];
+  const paths: any[] = [];
+  
+  langs.forEach(lang => {
+    yachts.forEach(yacht => {
+      paths.push({
+        params: { lang, id: yacht.id },
+        props: { yacht },
+      });
+    });
+  });
+  
+  return paths;
+}
+
+const { lang } = Astro.params;
+const { yacht } = Astro.props;
+---
+<YachtDetail yacht={yacht} lang={lang} />

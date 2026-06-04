@@ -1,0 +1,169 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import YachtCard from '../YachtCard.astro';
+import ContactForm from '../ContactForm.astro';
+import { supabase } from '../../lib/supabase';
+import { getLangFromUrl, useTranslations, defaultLang } from '../../i18n/ui';
+
+const { lang = defaultLang } = Astro.props;
+const t = useTranslations(lang);
+
+// Fetch from Supabase
+const { data: yachtsArray, error } = await supabase.from('yachts').select('*').neq('is_deleted', true).order('length_sort', { ascending: false, nullsFirst: false });
+if (error) console.error("Error fetching yachts", error);
+---
+
+<Layout title="AWE YACHTS — Luxury Yacht Brokerage" lang={lang}>
+  <!-- HERO -->
+  <section class="hero" id="home" aria-label="Hero section">
+    <div class="hero-video-wrap" aria-hidden="true">
+      <img src="/hero-bg.png" alt="Luxury superyacht at Mediterranean marina" style="width: 100%; height: 100%; object-fit: cover;">
+    </div>
+    <div class="hero-overlay" aria-hidden="true"></div>
+    <div class="hero-content">
+      <div class="hero-badge">{t('hero.badge')}</div>
+      <h1 class="hero-title" set:html={t('hero.title')} />
+      <p class="hero-subtitle">{t('hero.subtitle')}</p>
+      <div class="hero-actions">
+        <a href="#yachts" class="btn-primary" id="explore-yachts-btn">{t('hero.explore')}</a>
+        <a href="#contact" class="btn-outline" id="hero-contact-btn">{t('hero.speak')}</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- YACHTS -->
+  <section class="yachts-section" id="yachts" aria-label="Featured yachts">
+    <div class="yachts-header reveal">
+      <div>
+        <div class="section-tag">{t('yachts.tag')}</div>
+        <h2 class="section-title" set:html={t('yachts.title')} />
+      </div>
+      <div class="yachts-filters">
+        <button class="filter-btn active" data-filter="all">{t('yachts.filter.all')}</button>
+        <button class="filter-btn" data-filter="motor">{t('yachts.filter.motor')}</button>
+        <button class="filter-btn" data-filter="sail">{t('yachts.filter.sail')}</button>
+      </div>
+    </div>
+
+    <div class="yachts-grid" id="yachts-grid">
+      {yachtsArray && yachtsArray.map((yacht, index) => {
+        const delay = index % 3;
+        const tags = [];
+        if(yacht.id === 'azure-dream') tags.push('featured');
+        if(yacht.id === 'aquarius') tags.push('exclusive');
+        if(yacht.id === 'velocite') tags.push('performance');
+
+        return (
+          <YachtCard 
+            id={yacht.id}
+            name={yacht.name}
+            type={yacht.type}
+            length={yacht.length} 
+            guests={yacht.guests}
+            crew={yacht.crew_cabins}
+            year={yacht.year}
+            price={yacht.price}
+            image={yacht.main_image?.startsWith('http') ? yacht.main_image : `/${yacht.main_image}`}
+            tags={tags}
+            delay={delay}
+            widthStyle={yacht.width_style || 'normal'}
+            imagePosition={yacht.image_position || 'center'}
+            lang={lang}
+          />
+        );
+      })}
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about-section" id="about" aria-label="About AWE YACHTS">
+    <div class="about-image-wrap">
+      <img src="/about-bg.png" alt="AWE YACHTS luxury brokerage — Alex Bonet, Founder" loading="lazy">
+      <div class="about-image-overlay" aria-hidden="true"></div>
+    </div>
+    <div class="about-content">
+      <div class="section-tag reveal">{t('about.tag')}</div>
+      <h2 class="section-title reveal" set:html={t('about.title')} />
+      <p class="section-desc reveal">{t('about.desc')}</p>
+      <div class="about-features">
+        <div class="about-feature reveal">
+          <div class="about-feature-icon" aria-hidden="true"><i class="fas fa-shield-halved"></i></div>
+          <div>
+            <div class="about-feature-title">{t('about.feat1.title')}</div>
+            <p class="about-feature-text">{t('about.feat1.text')}</p>
+          </div>
+        </div>
+        <div class="about-feature reveal reveal-delay-1">
+          <div class="about-feature-icon" aria-hidden="true"><i class="fas fa-globe"></i></div>
+          <div>
+            <div class="about-feature-title">{t('about.feat2.title')}</div>
+            <p class="about-feature-text">{t('about.feat2.text')}</p>
+          </div>
+        </div>
+        <div class="about-feature reveal reveal-delay-2">
+          <div class="about-feature-icon" aria-hidden="true"><i class="fas fa-gem"></i></div>
+          <div>
+            <div class="about-feature-title">{t('about.feat3.title')}</div>
+            <p class="about-feature-text">{t('about.feat3.text')}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE BANNER -->
+  <div class="experience-banner" aria-label="Call to action">
+    <div class="experience-banner-bg js-parallax" aria-hidden="true" style="height: 160%; top: -30%;">
+      <video autoplay muted loop playsinline style="width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0;">
+        <source src="/hero-video.mp4" type="video/mp4">
+      </video>
+      <img src="/banner-video-fallback.png" alt="Luxury yacht" style="width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; z-index: -1;">
+    </div>
+    <div class="experience-banner-overlay" aria-hidden="true"></div>
+    <div class="experience-banner-content">
+      <div class="section-tag reveal" style="justify-content:center;">Premium Experience</div>
+      <h2 class="section-title reveal">Your next yacht<br>is <em>waiting for you</em></h2>
+      <p class="section-desc reveal">Contact us today and let our experts guide you. We'll help you find the perfect vessel for your needs and aspirations.</p>
+      <a href="#contact" class="btn-primary reveal" id="banner-cta-btn">Begin Your Search</a>
+    </div>
+  </div>
+
+  <!-- CONTACT -->
+  <section class="contact-section" id="contact" aria-label="Contact AWE YACHTS">
+    <div class="contact-info">
+      <div class="section-tag reveal">{t('contact.tag')}</div>
+      <h2 class="section-title reveal" set:html={t('contact.title')} />
+      <p class="section-desc reveal">{t('contact.desc')}</p>
+      
+      <div class="contact-methods reveal">
+        <a href="mailto:alex@aweyachts.com" class="contact-method-card">
+          <i class="fas fa-envelope"></i>
+          <div>
+            <strong>{t('contact.email')}</strong>
+            <p>alex@aweyachts.com</p>
+          </div>
+        </a>
+        <a href="tel:+34600000000" class="contact-method-card">
+          <i class="fas fa-phone"></i>
+          <div>
+            <strong>{t('contact.phone')}</strong>
+            <p>+34 600 000 000</p>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="contact-form-wrap reveal">
+      <ContactForm lang={lang} />
+    </div>
+  </section>
+
+  <script>
+    // Parallax logic
+    const heroBg = document.querySelector('.hero-video-wrap') as HTMLElement;
+    window.addEventListener('scroll', () => {
+      if (window.scrollY < window.innerHeight && heroBg) {
+        heroBg.style.transform = `translateY(${window.scrollY * 0.35}px)`;
+      }
+    }, { passive: true });
+  </script>
+</Layout>
