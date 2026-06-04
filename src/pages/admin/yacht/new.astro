@@ -29,9 +29,16 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
             <input type="text" id="yacht-price">
           </div>
           <div class="form-group">
-            <label>LOA</label>
-            <input type="text" id="yacht-length">
+          <label>LOA</label>
+          <div style="display: flex; gap: 10px;">
+            <div style="flex: 1;">
+              <input type="number" id="yacht-length-ft" placeholder="Feet (e.g. 147)" min="0">
+            </div>
+            <div style="flex: 1;">
+              <input type="number" id="yacht-length-in" placeholder="Inches (e.g. 5)" min="0" max="11">
+            </div>
           </div>
+        </div>
           <div class="form-group">
             <label>Guests</label>
             <input type="text" id="yacht-guests">
@@ -165,12 +172,21 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
       }
 
       // 3. Insert into Database
+      const ft = parseInt(document.getElementById('yacht-length-ft').value) || 0;
+      const inch = parseInt(document.getElementById('yacht-length-in').value) || 0;
+      let lengthText = '';
+      if (ft > 0 || inch > 0) {
+        lengthText = `${ft}'${inch > 0 ? ` ${inch}"` : ''}`;
+      }
+      const lengthSort = (ft * 12) + inch;
+
       const record = {
         id,
         name: document.getElementById('yacht-name').value,
         type: document.getElementById('yacht-type').value,
         price: document.getElementById('yacht-price').value,
-        length: document.getElementById('yacht-length').value,
+        length: lengthText,
+        length_sort: lengthSort,
         guests: document.getElementById('yacht-guests').value,
         crew_cabins: document.getElementById('yacht-crew').value,
         year: document.getElementById('yacht-year').value,

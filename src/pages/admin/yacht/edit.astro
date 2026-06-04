@@ -36,9 +36,16 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
             <input type="text" id="yacht-price">
           </div>
           <div class="form-group">
-            <label>LOA</label>
-            <input type="text" id="yacht-length">
+          <label>LOA</label>
+          <div style="display: flex; gap: 10px;">
+            <div style="flex: 1;">
+              <input type="number" id="yacht-length-ft" placeholder="Feet (e.g. 147)" min="0">
+            </div>
+            <div style="flex: 1;">
+              <input type="number" id="yacht-length-in" placeholder="Inches (e.g. 5)" min="0" max="11">
+            </div>
           </div>
+        </div>
           <div class="form-group">
             <label>Guests</label>
             <input type="text" id="yacht-guests">
@@ -127,7 +134,13 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
       document.getElementById('yacht-name').value = data.name;
       document.getElementById('yacht-type').value = data.type;
       document.getElementById('yacht-price').value = data.price;
-      document.getElementById('yacht-length').value = data.length || '';
+
+      // Extract ft and in from length_sort if available
+      if (data.length_sort) {
+        document.getElementById('yacht-length-ft').value = Math.floor(data.length_sort / 12);
+        document.getElementById('yacht-length-in').value = data.length_sort % 12;
+      }
+
       document.getElementById('yacht-guests').value = data.guests || '';
       document.getElementById('yacht-crew').value = data.crew_cabins || '';
       document.getElementById('yacht-year').value = data.year || '';
@@ -266,12 +279,21 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
         }
       }
 
-      // Update Database
+      // 3. Update Database
+      const ft = parseInt(document.getElementById('yacht-length-ft').value) || 0;
+      const inch = parseInt(document.getElementById('yacht-length-in').value) || 0;
+      let lengthText = '';
+      if (ft > 0 || inch > 0) {
+        lengthText = `${ft}'${inch > 0 ? ` ${inch}"` : ''}`;
+      }
+      const lengthSort = (ft * 12) + inch;
+
       const payload = {
         name: document.getElementById('yacht-name').value,
         type: document.getElementById('yacht-type').value,
         price: document.getElementById('yacht-price').value,
-        length: document.getElementById('yacht-length').value,
+        length: lengthText,
+        length_sort: lengthSort,
         guests: document.getElementById('yacht-guests').value,
         crew_cabins: document.getElementById('yacht-crew').value,
         year: document.getElementById('yacht-year').value,
