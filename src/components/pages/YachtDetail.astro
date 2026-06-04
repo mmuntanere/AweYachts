@@ -56,7 +56,7 @@ const seoDescription = descriptionContent
   <section class="detail-content detail-content-grid" style="max-width: 1200px; margin: 0 auto; padding: 60px 40px;">
     
     <div class="detail-description" style="min-width: 0;">
-      <h2 class="section-title" style="font-size: 32px;">{t('detail.about')}</h2>
+      <h2 class="section-title" style="font-size: 32px;" set:html={t('detail.about')} />
       <p id="yacht-desc" class="section-desc" style="text-align: left; max-width: 100%; color: var(--cream); font-size: 16px; line-height: 1.8;">{descriptionContent}</p>
       
         <div style="margin-top: 60px;">
