@@ -17,9 +17,17 @@ export async function getStaticPaths() {
 
 const { id } = Astro.params;
 const { yacht } = Astro.props;
+// Use yacht's description if available, otherwise fallback to specs summary
+const seoDescription = yacht.description 
+  ? (yacht.description.substring(0, 150) + (yacht.description.length > 150 ? "..." : "")) 
+  : `Luxury ${yacht.type} yacht available. LOA: ${yacht.length}, Guests: ${yacht.guests}.`;
 ---
 
-<Layout title={`AWE YACHTS — ${yacht.name}`}>
+<Layout 
+  title={`AWE YACHTS — ${yacht.name}`}
+  description={seoDescription}
+  image={yacht.image}
+>
   <!-- DETAIL HERO -->
   <section class="detail-hero" id="detail-hero" style="position: relative; padding-top: 100px; min-height: 80vh; display: flex; align-items: flex-end; padding-bottom: 60px; overflow: hidden;">
     <div class="detail-hero-bg js-parallax" style="position: absolute; inset: 0; z-index: 0; top: -20%; height: 120%;">
