@@ -66,6 +66,11 @@ const socialImageURL = new URL(image, Astro.site || Astro.url.origin).href;
 	<slot />
 	<Footer lang={lang} />
 	
+	<!-- WhatsApp Floating Button -->
+	<a href="https://wa.me/34614582862" class="whatsapp-float" target="_blank" rel="noopener noreferrer" aria-label="Contact us on WhatsApp">
+		<i class="fab fa-whatsapp"></i>
+	</a>
+	
 	{/* Language Auto-Detection Script (Only runs on root '/') */}
 	{Astro.url.pathname === '/' && (
 		<script>
