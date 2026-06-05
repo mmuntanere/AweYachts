@@ -130,21 +130,28 @@ if (error) console.error("Error fetching yachts", error);
       <h2 class="section-title reveal" set:html={t('contact.title')} />
       <p class="section-desc reveal">{t('contact.desc')}</p>
       
-      <div class="contact-methods reveal">
-        <a href="mailto:alex@aweyachts.com" class="contact-method-card">
-          <i class="fas fa-envelope"></i>
+      <div class="contact-details">
+        <div class="contact-detail reveal">
+          <div class="contact-detail-icon" aria-hidden="true"><i class="fas fa-phone"></i></div>
           <div>
-            <strong>{t('contact.email')}</strong>
-            <p>alex@aweyachts.com</p>
+            <div class="contact-detail-label">{t('contact.phone')}</div>
+            <div class="contact-detail-value">+34 614 582 862</div>
           </div>
-        </a>
-        <a href="tel:+34600000000" class="contact-method-card">
-          <i class="fas fa-phone"></i>
+        </div>
+        <div class="contact-detail reveal reveal-delay-1">
+          <div class="contact-detail-icon" aria-hidden="true"><i class="fas fa-envelope"></i></div>
           <div>
-            <strong>{t('contact.phone')}</strong>
-            <p>+34 600 000 000</p>
+            <div class="contact-detail-label">{t('contact.email')}</div>
+            <div class="contact-detail-value">alex@aweyachts.com</div>
           </div>
-        </a>
+        </div>
+        <div class="contact-detail reveal reveal-delay-2">
+          <div class="contact-detail-icon" aria-hidden="true"><i class="fas fa-location-dot"></i></div>
+          <div>
+            <div class="contact-detail-label">{t('contact.office')}</div>
+            <div class="contact-detail-value">Carrer Joan Maria Thomàs, 4<br>Ponent, 07014 Palma<br>Illes Balears</div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="contact-form-wrap reveal">
