@@ -173,7 +173,22 @@ const schemaData = {
         
         <div id="enquire-form-container" style="display: none; margin-top: 20px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); padding: 25px 20px; border-radius: 4px;">
           <h2 class="detail-block-title" id="enquire" style="font-size: 16px; margin-bottom: 15px; font-weight: 400; color: var(--gold);">{t('detail.form.title')}</h2>
-          <ContactForm lang={lang} />
+          <form id="enquire-form" novalidate>
+            <input type="hidden" name="interest" value="buy">
+            <input type="hidden" name="message" value={`I am interested in receiving more information about the yacht: ${yacht.name}.`}>
+            
+            <div style="margin-bottom: 15px;">
+              <label style="display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 6px;">{t('contact.form.name')}</label>
+              <input type="text" name="name" required placeholder={t('contact.form.name.placeholder')} style="width: 100%; padding: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: white; font-family: var(--font-main);">
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+              <label style="display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 6px;">{t('contact.form.email')}</label>
+              <input type="email" name="email" required placeholder={t('contact.form.email.placeholder')} style="width: 100%; padding: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: white; font-family: var(--font-main);">
+            </div>
+            
+            <button type="submit" id="enquire-submit-btn" class="btn-primary" style="width: 100%;">{t('detail.form.submit')}</button>
+          </form>
         </div>
       </div>
     </div>
