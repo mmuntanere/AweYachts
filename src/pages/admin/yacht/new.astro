@@ -161,6 +161,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
       // 2. Upload Gallery Images
       const galleryInput = document.getElementById('yacht-gallery-files');
       let gallery = [];
+      let failedUploads = [];
       if (galleryInput.files.length > 0) {
         btn.textContent = 'Uploading gallery...';
         for (let i = 0; i < galleryInput.files.length; i++) {
@@ -177,6 +178,8 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
               .from('yacht-images')
               .getPublicUrl(fileName);
             gallery.push(publicUrl);
+          } else {
+            failedUploads.push(`${file.name}: ${galError.message}`);
           }
         }
       }
@@ -216,8 +219,12 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
         btn.textContent = 'Save Yacht';
         btn.disabled = false;
       } else {
-        alert('Yacht successfully added!');
-        window.location.href = '/admin';
+        if (failedUploads.length > 0) {
+          alert('Yacht saved successfully, but some images failed to upload:\n\n' + failedUploads.join('\n'));
+        } else {
+          alert('Yacht successfully added!');
+        }
+        window.location.href = '/admin/';
       }
     };
   </script>
