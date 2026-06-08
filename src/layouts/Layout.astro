@@ -60,6 +60,16 @@ const socialImageURL = new URL(image, Astro.site || Astro.url.origin).href;
 	
 	<!-- Favicon -->
 	<link rel="icon" type="image/png" href="/favicon.png?v=3">
+
+	<!-- Google tag (gtag.js) -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-FKBH6L4R00"></script>
+	<script is:inline>
+	  window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments);}
+	  gtag('js', new Date());
+
+	  gtag('config', 'G-FKBH6L4R00');
+	</script>
 </head>
 <body>
 	<Navbar lang={lang} />
