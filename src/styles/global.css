@@ -278,7 +278,16 @@ section { padding: 60px 60px; }
 .about-image-wrap:hover img { transform: scale(1.04); }
 .about-image-overlay {
   position: absolute; inset: 0;
-  background: linear-gradient(to right, transparent 60%, var(--navy-mid) 100%);
+  background: linear-gradient(to right, transparent 60%, var(--navy-mid) 100%), linear-gradient(to top, rgba(6,16,32,0.8) 0%, transparent 40%);
+}
+.about-image-caption {
+  position: absolute; bottom: 40px; left: 40px; z-index: 10;
+}
+.about-caption-name {
+  font-family: var(--font-heading); font-size: 26px; color: var(--white); margin-bottom: 6px; letter-spacing: 1px;
+}
+.about-caption-title {
+  font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); font-weight: 500;
 }
 .about-content {
   padding: 52px 60px;
