@@ -1,0 +1,86 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="AWE YACHTS — Brochures">
+  <div class="admin-main">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+      <h1 class="hero-title" style="font-size: 40px; margin: 0;">Yacht <em>Brochures</em></h1>
+      <div>
+        <a href="/admin" class="btn-primary" style="padding: 10px 20px; background: transparent; border: 1px solid var(--gold); color: var(--gold); margin-right: 15px;"><i class="fas fa-arrow-left"></i> Back to Fleet</a>
+        <a href="/admin/brochures/edit" class="btn-primary" style="padding: 10px 20px;">+ New Brochure</a>
+      </div>
+    </div>
+
+    <div class="admin-card">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Yacht</th>
+            <th>Pages</th>
+            <th>Last updated</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="brochures-tbody">
+          <tr><td colspan="4" style="text-align:center;">Loading brochures...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    import { supabase } from '../../../lib/supabase';
+
+    const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+    const tbody = document.getElementById('brochures-tbody');
+
+    const load = async () => {
+      const { data, error } = await supabase.from('brochures').select('id, name, data, updated_at').order('updated_at', { ascending: false });
+
+      if (error) {
+        const missingTable = /brochures/.test(error.message) && /(does not exist|schema cache)/.test(error.message);
+        tbody.innerHTML = `<tr><td colspan="4" style="color:#ff4d4d;">${missingTable
+          ? 'The brochures table does not exist yet. Run <code>supabase/brochures.sql</code> in the Supabase SQL Editor.'
+          : 'Error loading data: ' + esc(error.message)}</td></tr>`;
+        return;
+      }
+
+      if (data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No brochures yet.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = data.map(b => `
+        <tr>
+          <td><strong>${esc(b.name)}</strong></td>
+          <td>${b.data?.pages?.length ?? 0}</td>
+          <td>${new Date(b.updated_at).toLocaleString()}</td>
+          <td>
+            <button class="action-btn" onclick="window.location.href='/admin/brochures/edit?id=${b.id}'" title="Edit"><i class="fas fa-pen"></i></button>
+            <button class="action-btn" onclick="window.open('/admin/brochures/print?id=${b.id}', '_blank')" title="Preview & PDF"><i class="fas fa-file-pdf"></i></button>
+            <button class="action-btn" onclick="duplicateBrochure('${b.id}')" title="Duplicate"><i class="fas fa-clone"></i></button>
+            <button class="action-btn delete" onclick="deleteBrochure('${b.id}')" title="Delete"><i class="fas fa-trash"></i></button>
+          </td>
+        </tr>
+      `).join('');
+    };
+
+    window.duplicateBrochure = async (id) => {
+      const { data: b, error } = await supabase.from('brochures').select('name, data').eq('id', id).single();
+      if (error) return alert('Error duplicating brochure: ' + error.message);
+      const { error: insertError } = await supabase.from('brochures').insert({ name: `${b.name} (copy)`, data: b.data });
+      if (insertError) return alert('Error duplicating brochure: ' + insertError.message);
+      load();
+    };
+
+    window.deleteBrochure = async (id) => {
+      if (!confirm('Delete this brochure permanently? Its photos stay in storage.')) return;
+      const { error } = await supabase.from('brochures').delete().eq('id', id);
+      if (error) return alert('Error deleting brochure: ' + error.message);
+      load();
+    };
+
+    window.addEventListener('DOMContentLoaded', load);
+  </script>
+</AdminLayout>

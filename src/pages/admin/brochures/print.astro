@@ -1,0 +1,81 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import '../../../styles/brochure.css';
+---
+
+<AdminLayout title="AWE YACHTS — Brochure PDF">
+  <div class="bp-toolbar">
+    <a href="/admin/brochures" id="back-link" class="btn-outline" style="padding: 10px 20px;"><i class="fas fa-arrow-left"></i> Back to editor</a>
+    <span id="bp-status">Loading brochure...</span>
+    <button id="print-btn" class="btn-primary" style="padding: 10px 20px;" disabled><i class="fas fa-file-pdf"></i> Save as PDF</button>
+  </div>
+  <p class="bp-hint">In the print dialog choose <strong>Destination: Save as PDF</strong>. Best results in Chrome.</p>
+  <div class="bp-sheet" id="bp-sheet"></div>
+</AdminLayout>
+
+<style is:global>
+  @page { size: 1480px 812px; margin: 0; }
+
+  .bp-toolbar {
+    position: sticky; top: 61px; z-index: 50;
+    display: flex; justify-content: space-between; align-items: center; gap: 20px;
+    padding: 15px 40px; background: rgba(4, 10, 20, 0.92); border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  #bp-status { font-size: 13px; color: var(--text-muted); }
+  .bp-hint { text-align: center; font-size: 12px; color: var(--text-muted); margin: 20px 0 0; }
+  .bp-sheet { display: flex; flex-direction: column; align-items: center; gap: 24px; padding: 24px 0 80px; }
+  .bp-sheet .bp-page { box-shadow: 0 10px 40px rgba(0,0,0,0.5); flex-shrink: 0; }
+
+  @media print {
+    html, body { background: #fff !important; margin: 0; padding: 0; }
+    .admin-nav, .bp-toolbar, .bp-hint { display: none !important; }
+    .bp-sheet { display: block; padding: 0; zoom: 1 !important; }
+    .bp-sheet .bp-page { box-shadow: none; }
+  }
+</style>
+
+<script>
+  import { supabase } from '../../../lib/supabase';
+  import { renderBrochure, PAGE_W } from '../../../lib/brochure';
+
+  const status = document.getElementById('bp-status');
+  const sheet = document.getElementById('bp-sheet');
+  const printBtn = document.getElementById('print-btn');
+
+  const fitToScreen = () => {
+    sheet.style.zoom = String(Math.min(1, (window.innerWidth - 48) / PAGE_W));
+  };
+
+  const imagesLoaded = () => Promise.all([...sheet.querySelectorAll('img')].map(img =>
+    img.complete ? null : new Promise(r => { img.onload = img.onerror = r; })));
+
+  window.addEventListener('DOMContentLoaded', async () => {
+    const id = new URLSearchParams(window.location.search).get('id');
+    if (!id) {
+      status.textContent = 'No brochure selected.';
+      return;
+    }
+    document.getElementById('back-link').href = `/admin/brochures/edit?id=${id}`;
+
+    const { data: row, error } = await supabase.from('brochures').select('*').eq('id', id).single();
+    if (error || !row) {
+      status.textContent = 'Error loading brochure: ' + (error?.message || 'not found');
+      return;
+    }
+
+    document.title = `${row.data.name || 'Brochure'} - AWE Yachts`;
+    // Paginate at full size, then scale down for the screen preview.
+    sheet.style.zoom = '1';
+    await renderBrochure(row.data, sheet);
+    fitToScreen();
+    window.addEventListener('resize', fitToScreen);
+
+    status.textContent = 'Loading photos...';
+    await imagesLoaded();
+    const pages = sheet.children.length;
+    status.textContent = `${pages} page${pages === 1 ? '' : 's'} ready`;
+    printBtn.disabled = false;
+  });
+
+  printBtn.addEventListener('click', () => window.print());
+</script>

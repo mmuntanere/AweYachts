@@ -1,0 +1,486 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="AWE YACHTS — Brochure Editor">
+  <div class="admin-main" style="max-width: 1100px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; gap: 20px; flex-wrap: wrap;">
+      <h1 class="hero-title" style="font-size: 32px; margin: 0;">Brochure <em>Editor</em></h1>
+      <div style="display: flex; gap: 12px; align-items: center;">
+        <span id="be-status" class="be-status"></span>
+        <a href="/admin/brochures" class="btn-outline" style="padding: 10px 20px;">Back</a>
+        <button id="save-btn" class="btn-outline" style="padding: 10px 20px;"><i class="fas fa-save"></i> Save</button>
+        <button id="pdf-btn" class="btn-primary" style="padding: 10px 20px;"><i class="fas fa-file-pdf"></i> Preview & PDF</button>
+      </div>
+    </div>
+
+    <div class="admin-card" id="be-loading"><p style="text-align: center;">Loading...</p></div>
+
+    <div id="be-editor" style="display: none;">
+      <div class="admin-card be-card" id="be-fleet">
+        <h3 class="be-h3">Start from a fleet yacht <small>(optional)</small></h3>
+        <div style="display: flex; gap: 12px;">
+          <select id="fleet-select" class="be-input" style="flex: 1;"><option value="">Loading fleet...</option></select>
+          <button type="button" id="fleet-load" class="btn-outline" style="padding: 10px 20px;">Load data & photos</button>
+        </div>
+        <p class="be-hint">Fills in name, price, year, LOA, guests, crew, description and photos. You can edit everything afterwards.</p>
+      </div>
+
+      <div class="admin-card be-card" id="be-general"></div>
+
+      <div id="be-pages"></div>
+
+      <div class="admin-card be-card">
+        <h3 class="be-h3">Add pages</h3>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+          <select id="add-type" class="be-input" style="flex: 1; min-width: 220px;"></select>
+          <button type="button" id="add-page" class="btn-outline" style="padding: 10px 20px;">+ Add page</button>
+          <label class="btn-outline" style="padding: 10px 20px; cursor: pointer;">
+            <i class="fas fa-images"></i> Add photo pages from files
+            <input type="file" id="bulk-photos" accept="image/*" multiple hidden>
+          </label>
+          <button type="button" id="pair-photos" class="btn-outline" style="padding: 10px 20px;"><i class="fas fa-columns"></i> Pair vertical photos</button>
+        </div>
+        <p class="be-hint">"Add photo pages from files" creates one full-page photo per file, placed before the closing page. Vertical photos are paired two per page automatically. "Pair vertical photos" does the same for the full-page photos already in this brochure.</p>
+      </div>
+    </div>
+  </div>
+</AdminLayout>
+
+<style is:global>
+  .be-card { padding: 28px 32px; margin-bottom: 20px; }
+  .be-h3 { font-family: var(--font-heading); font-size: 22px; font-weight: 400; color: var(--gold); margin: 0 0 18px; }
+  .be-h3 small { font-family: var(--font-body); font-size: 12px; color: var(--text-muted); }
+  .be-hint { font-size: 12px; color: var(--text-muted); margin: 8px 0 0; line-height: 1.5; }
+  .be-status { font-size: 12px; color: var(--text-muted); }
+  .be-status.dirty { color: var(--gold); }
+  .be-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0 16px; }
+  .be-card .form-group { margin-bottom: 16px; }
+  .be-card .form-group input, .be-card .form-group select, .be-card .form-group textarea, .be-input {
+    padding: 10px 12px; font-size: 13px; width: 100%;
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(201,169,110,0.2); color: var(--cream);
+    font-family: var(--font-body); outline: none;
+  }
+  .be-input option, .be-card select option { background: var(--navy-mid); }
+  .be-card .form-group textarea { height: auto; }
+  .be-page-head { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+  .be-page-head .be-h3 { margin: 0; flex: 1; }
+  .be-page-num { color: var(--text-muted); font-size: 13px; }
+  .be-empty[hidden] { display: none; }
+  .be-empty { font-family: var(--font-body); font-size: 11px; letter-spacing: 1px; color: var(--text-muted); border: 1px solid rgba(255,255,255,0.15); padding: 3px 8px; margin-left: 12px; vertical-align: middle; }
+  .be-row { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 8px; }
+  .be-row > * { flex: 1; }
+  .be-row > .be-fixed { flex: 0 0 auto; }
+  .be-row textarea.be-input { resize: vertical; min-height: 40px; }
+  .be-btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--cream);
+    padding: 8px 14px; font-size: 12px; cursor: pointer; white-space: nowrap; font-family: var(--font-body);
+  }
+  .be-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .be-btn.danger:hover { border-color: #ff4d4d; color: #ff4d4d; }
+  .be-btn:disabled { opacity: 0.3; pointer-events: none; }
+  .be-btn.icon { width: 36px; height: 36px; padding: 0; }
+  .be-imgs { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; margin-bottom: 16px; }
+  .be-img { border: 1px solid rgba(255,255,255,0.08); padding: 10px; }
+  .be-thumb { aspect-ratio: 16 / 9; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; margin-bottom: 8px; overflow: hidden; }
+  .be-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .be-thumb span { font-size: 12px; color: var(--text-muted); }
+  .be-img-label { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; display: block; }
+  .be-img-ctrl { display: flex; gap: 6px; flex-wrap: wrap; }
+  .be-img-ctrl select { flex: 1; padding: 6px; font-size: 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(201,169,110,0.2); color: var(--cream); }
+  .be-section { border-left: 2px solid rgba(201,169,110,0.3); padding: 12px 0 4px 16px; margin-bottom: 16px; }
+  .be-sublabel { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin: 6px 0 10px; display: block; }
+</style>
+
+<script>
+  import { supabase } from '../../../lib/supabase';
+  import { newBrochure, newPage, brochureFromYacht, photoPages, isEmptyPage, uploadBrochureImage, emptyImage, PAGE_TYPES, PHOTO_LAYOUTS } from '../../../lib/brochure';
+
+  let id = new URLSearchParams(window.location.search).get('id');
+  let data = newBrochure();
+  let dirty = false;
+  let busy = 0; // uploads in progress
+
+  const statusEl = document.getElementById('be-status');
+  const generalEl = document.getElementById('be-general');
+  const pagesEl = document.getElementById('be-pages');
+
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  const get = (path) => path.split('.').reduce((o, k) => o?.[k], data);
+  const set = (path, value) => {
+    const keys = path.split('.');
+    const last = keys.pop();
+    keys.reduce((o, k) => o[k], data)[last] = value;
+  };
+
+  const setStatus = (text = null) => {
+    statusEl.textContent = text ?? (busy ? 'Uploading photos...' : dirty ? 'Unsaved changes' : id ? 'Saved' : '');
+    statusEl.classList.toggle('dirty', dirty || busy > 0);
+  };
+  const markDirty = () => { dirty = true; setStatus(); };
+
+  // ---------- Field helpers ----------
+
+  const options = (list, current) => Object.entries(list).map(([value, label]) =>
+    `<option value="${value}" ${value === current ? 'selected' : ''}>${esc(label)}</option>`).join('');
+
+  const field = (label, path, { rows, placeholder = '' } = {}) => `
+    <div class="form-group"><label>${label}</label>
+      ${rows
+        ? `<textarea data-bind="${path}" rows="${rows}" placeholder="${esc(placeholder)}">${esc(get(path))}</textarea>`
+        : `<input type="text" data-bind="${path}" value="${esc(get(path))}" placeholder="${esc(placeholder)}">`}
+    </div>`;
+
+  const FOCUS = { center: 'Focus: center', top: 'Focus: top', bottom: 'Focus: bottom' };
+
+  const imageSlot = (path, label, removable = false) => {
+    const image = get(path) || {};
+    return `
+      <div class="be-img">
+        <span class="be-img-label">${label}</span>
+        <div class="be-thumb">${image.url ? `<img src="${esc(image.url)}" alt="">` : '<span>No image</span>'}</div>
+        <div class="be-img-ctrl">
+          <label class="be-btn"><i class="fas fa-upload"></i> ${image.url ? 'Replace' : 'Upload'}<input type="file" accept="image/*" data-upload="${path}" hidden></label>
+          ${image.url ? `<button type="button" class="be-btn icon danger" data-action="clear-img" data-path="${path}" title="Remove image"><i class="fas fa-times"></i></button>` : ''}
+          ${removable ? `<button type="button" class="be-btn icon danger" data-action="remove-slot" data-path="${path}" title="Remove slot"><i class="fas fa-trash"></i></button>` : ''}
+          <select data-bind="${path}.focus">${options(FOCUS, image.focus || 'center')}</select>
+        </div>
+      </div>`;
+  };
+
+  const btn = (action, attrs, html, cls = '', disabled = false) =>
+    `<button type="button" class="be-btn ${cls}" data-action="${action}" ${Object.entries(attrs).map(([k, v]) => `data-${k}="${v}"`).join(' ')} ${disabled ? 'disabled' : ''}>${html}</button>`;
+
+  // ---------- Page editors ----------
+
+  const pageBodies = {
+    cover: (p, i) => `
+      <div class="be-imgs">${imageSlot(`pages.${i}.image`, 'Cover photo')}</div>
+      <p class="be-hint">Name, price, LOA, builder and year on the cover come from the General section.</p>`,
+
+    specs: (p, i) => `
+      <div class="be-imgs">${imageSlot(`pages.${i}.image`, 'Background photo (darkened)')}</div>
+      <span class="be-sublabel">Particulars</span>
+      ${p.specs.map((s, j) => `
+        <div class="be-row">
+          <input class="be-input" data-bind="pages.${i}.specs.${j}.label" value="${esc(s.label)}" placeholder="Label" style="flex: 0 0 200px;">
+          <textarea class="be-input" data-bind="pages.${i}.specs.${j}.value" rows="1" placeholder="Value">${esc(s.value)}</textarea>
+          <select class="be-input be-fixed" data-bind="pages.${i}.specs.${j}.width" style="width: 130px;">${options({ normal: '1 column', wide: '2 columns', full: 'Full row' }, s.width)}</select>
+          ${btn('remove-spec', { i, j }, '<i class="fas fa-trash"></i>', 'icon danger be-fixed')}
+        </div>`).join('')}
+      ${btn('add-spec', { i }, '+ Add particular')}
+      <span class="be-sublabel" style="margin-top: 24px;">Key features</span>
+      ${p.features.map((f, j) => `
+        <div class="be-row">
+          <input class="be-input" data-bind="pages.${i}.features.${j}" value="${esc(f)}" placeholder="e.g. 10Yr Refit completed 2024/25">
+          ${btn('remove-feature', { i, j }, '<i class="fas fa-trash"></i>', 'icon danger be-fixed')}
+        </div>`).join('')}
+      ${btn('add-feature', { i }, '+ Add key feature')}
+      <p class="be-hint">Leave key features empty to hide that column. Empty particulars are not printed.</p>`,
+
+    about: (p, i) => `
+      <div class="be-imgs">${imageSlot(`pages.${i}.image`, 'Side photo (optional)')}</div>
+      ${field('Intro (bold, grey)', `pages.${i}.lead`, { rows: 3, placeholder: 'SY Farfalla is a beautifully presented example of...' })}
+      ${field('Body text', `pages.${i}.body`, { rows: 12 })}
+      <p class="be-hint">Separate paragraphs with a blank line. Use **text** for bold. The text shrinks automatically to fit on one page.</p>`,
+
+    photos: (p, i) => `
+      <div class="be-grid">
+        <div class="form-group"><label>Layout</label><select data-bind="pages.${i}.layout" data-rerender>${options(Object.fromEntries(Object.entries(PHOTO_LAYOUTS).map(([k, v]) => [k, v.label])), p.layout)}</select></div>
+        ${field('Caption (optional)', `pages.${i}.caption`, { placeholder: 'Interior / Master cabin' })}
+      </div>
+      <div class="be-imgs">${p.images.map((_, j) => imageSlot(`pages.${i}.images.${j}`, `Photo ${j + 1}`)).join('')}</div>
+      ${p.layout === 'portraits' ? '<p class="be-hint">On this layout the caption becomes the page title on the left (e.g. "Interior / Cabins"); without a caption the yacht name is used.</p>' : ''}`,
+
+    plan: (p, i) => `
+      ${field('Title', `pages.${i}.title`)}
+      <div class="be-imgs">${p.images.map((_, j) => imageSlot(`pages.${i}.images.${j}`, `Plan ${j + 1}`, p.images.length > 1)).join('')}</div>
+      ${p.images.length < 3 ? btn('add-plan', { i }, '+ Add plan image') : ''}
+      <p class="be-hint">Plans are shown whole (not cropped), stacked from top to bottom.</p>`,
+
+    text: (p, i) => `
+      <div class="be-grid">
+        ${field('Title', `pages.${i}.title`)}
+        <div class="form-group"><label>Style</label><select data-bind="pages.${i}.style">${options({ list: 'Headings + paragraphs, 3 columns (Farfalla)', table: 'Label / value table, 2 columns (4K)' }, p.style)}</select></div>
+      </div>
+      <div class="be-imgs">${imageSlot(`pages.${i}.image`, 'Side photo (optional, repeated on every page)')}</div>
+      ${p.sections.map((s, j) => `
+        <div class="be-section">
+          <div class="be-row">
+            <input class="be-input" data-bind="pages.${i}.sections.${j}.title" value="${esc(s.title)}" placeholder="Section title (e.g. Hull & Appendages, 2024...)" style="font-weight: 600;">
+            ${btn('remove-section', { i, j }, '<i class="fas fa-trash"></i> Section', 'danger be-fixed')}
+          </div>
+          ${s.items.map((it, k) => `
+            <div class="be-row">
+              <input class="be-input" data-bind="pages.${i}.sections.${j}.items.${k}.label" value="${esc(it.label)}" placeholder="Label (optional)" style="flex: 0 0 220px;">
+              <textarea class="be-input" data-bind="pages.${i}.sections.${j}.items.${k}.value" rows="2" placeholder="Text">${esc(it.value)}</textarea>
+              ${btn('remove-item', { i, j, k }, '<i class="fas fa-trash"></i>', 'icon danger be-fixed')}
+            </div>`).join('')}
+          ${btn('add-item', { i, j }, '+ Add item')}
+        </div>`).join('')}
+      ${btn('add-section', { i }, '+ Add section')}
+      <p class="be-hint">Long content continues automatically on as many pages as needed.</p>`,
+
+    closing: (p, i) => `
+      <div class="be-imgs">${imageSlot(`pages.${i}.image`, 'Background photo (darkened)')}</div>
+      <p class="be-hint">Shows the yacht name${data.branding ? ', the AWE Yachts logo and the contact details from General' : ''}.</p>`,
+  };
+
+  const renderGeneral = () => {
+    generalEl.innerHTML = `
+      <h3 class="be-h3">General</h3>
+      <div class="be-grid">
+        ${field('Yacht name', 'name', { placeholder: 'FARFALLA' })}
+        ${field('Price', 'price', { placeholder: '7.95M EX VAT' })}
+        ${field('LOA', 'length', { placeholder: '31.78M' })}
+        ${field('Builder', 'builder', { placeholder: 'Southern Wind' })}
+        ${field('Year', 'year', { placeholder: '2014' })}
+      </div>
+      <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 13px; margin: 4px 0 16px;">
+        <input type="checkbox" data-bind="branding" data-rerender ${data.branding ? 'checked' : ''}> AWE Yachts branding: logo on cover and closing page + contact details. Untick for an unbranded version (colours stay the same)
+      </label>
+      ${data.branding ? `<div class="be-grid">
+        ${field('Contact name', 'contact.name')}
+        ${field('Email', 'contact.email')}
+        ${field('Phone', 'contact.phone')}
+        ${field('Website', 'contact.web')}
+      </div>` : ''}`;
+  };
+
+  const renderPages = () => {
+    const last = data.pages.length - 1;
+    pagesEl.innerHTML = data.pages.map((p, i) => `
+      <div class="admin-card be-card">
+        <div class="be-page-head">
+          <span class="be-page-num">${i + 1}</span>
+          <h3 class="be-h3">${esc(PAGE_TYPES[p.type])}<span class="be-empty" ${isEmptyPage(p) ? '' : 'hidden'}>Empty: not included in the PDF</span></h3>
+          ${btn('move-page', { i, dir: -1 }, '<i class="fas fa-arrow-up"></i>', 'icon', i === 0)}
+          ${btn('move-page', { i, dir: 1 }, '<i class="fas fa-arrow-down"></i>', 'icon', i === last)}
+          ${btn('dup-page', { i }, '<i class="fas fa-clone"></i>', 'icon')}
+          ${btn('remove-page', { i }, '<i class="fas fa-trash"></i>', 'icon danger')}
+        </div>
+        ${pageBodies[p.type](p, i)}
+      </div>`).join('');
+  };
+
+  const render = () => { renderGeneral(); renderPages(); };
+
+  const refreshEmptyBadges = () => {
+    [...pagesEl.children].forEach((card, i) => { card.querySelector('.be-empty').hidden = !isEmptyPage(data.pages[i]); });
+  };
+
+  // ---------- Events ----------
+
+  const onInput = (e) => {
+    const path = e.target.dataset.bind;
+    if (!path) return;
+    set(path, e.target.type === 'checkbox' ? e.target.checked : e.target.value);
+    if (path.endsWith('.layout')) {
+      // Keep the number of photo slots in line with the chosen layout.
+      const page = get(path.replace(/\.layout$/, ''));
+      const count = PHOTO_LAYOUTS[page.layout].count;
+      page.images = Array.from({ length: count }, (_, j) => page.images[j] || emptyImage());
+    }
+    markDirty();
+    if (e.type === 'change' && e.target.dataset.rerender !== undefined) render();
+    else refreshEmptyBadges();
+  };
+
+  const actions = {
+    'move-page': ({ i, dir }) => {
+      const j = +i + +dir;
+      [data.pages[i], data.pages[j]] = [data.pages[j], data.pages[i]];
+    },
+    'dup-page': ({ i }) => data.pages.splice(+i + 1, 0, structuredClone(data.pages[i])),
+    'remove-page': ({ i }) => {
+      if (!confirm(`Remove page ${+i + 1} (${PAGE_TYPES[data.pages[i].type]})?`)) return false;
+      data.pages.splice(i, 1);
+    },
+    'add-spec': ({ i }) => data.pages[i].specs.push({ label: '', value: '', width: 'normal' }),
+    'remove-spec': ({ i, j }) => data.pages[i].specs.splice(j, 1),
+    'add-feature': ({ i }) => data.pages[i].features.push(''),
+    'remove-feature': ({ i, j }) => data.pages[i].features.splice(j, 1),
+    'add-plan': ({ i }) => data.pages[i].images.push(emptyImage()),
+    'add-section': ({ i }) => data.pages[i].sections.push({ title: '', items: [{ label: '', value: '' }] }),
+    'remove-section': ({ i, j }) => data.pages[i].sections.splice(j, 1),
+    'add-item': ({ i, j }) => data.pages[i].sections[j].items.push({ label: '', value: '' }),
+    'remove-item': ({ i, j, k }) => data.pages[i].sections[j].items.splice(k, 1),
+    'clear-img': ({ path }) => set(`${path}.url`, ''),
+    'remove-slot': ({ path }) => {
+      const keys = path.split('.');
+      const idx = keys.pop();
+      get(keys.join('.')).splice(idx, 1);
+    },
+  };
+
+  const onClick = (e) => {
+    const el = e.target.closest('[data-action]');
+    if (!el || el.disabled) return;
+    if (actions[el.dataset.action](el.dataset) === false) return;
+    markDirty();
+    render();
+  };
+
+  const onUpload = async (e) => {
+    const path = e.target.dataset.upload;
+    const file = e.target.files?.[0];
+    if (!path || !file) return;
+    const thumb = e.target.closest('.be-img').querySelector('.be-thumb');
+    thumb.innerHTML = '<span>Uploading...</span>';
+    busy++;
+    setStatus();
+    try {
+      set(`${path}.url`, await uploadBrochureImage(supabase, file));
+      markDirty();
+    } catch (err) {
+      alert('Error uploading image: ' + err.message);
+    } finally {
+      busy--;
+      setStatus();
+      render();
+    }
+  };
+
+  document.getElementById('be-editor').addEventListener('input', onInput);
+  document.getElementById('be-editor').addEventListener('change', (e) => (e.target.dataset.upload ? onUpload(e) : onInput(e)));
+  document.getElementById('be-editor').addEventListener('click', onClick);
+
+  document.getElementById('add-type').innerHTML = options(PAGE_TYPES, 'photos');
+  document.getElementById('add-page').addEventListener('click', () => {
+    data.pages.push(newPage(document.getElementById('add-type').value));
+    markDirty();
+    render();
+    pagesEl.lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+
+  document.getElementById('bulk-photos').addEventListener('change', async (e) => {
+    const files = [...e.target.files];
+    e.target.value = '';
+    const closingIdx = data.pages.findIndex(p => p.type === 'closing');
+    const insertAt = closingIdx === -1 ? data.pages.length : closingIdx;
+    busy++;
+    const failed = [];
+    const uploaded = [];
+    for (const [n, file] of files.entries()) {
+      setStatus(`Uploading photo ${n + 1}/${files.length}...`);
+      try {
+        uploaded.push({ url: await uploadBrochureImage(supabase, file), focus: 'center' });
+      } catch (err) {
+        failed.push(`${file.name}: ${err.message}`);
+      }
+    }
+    data.pages.splice(insertAt, 0, ...await photoPages(uploaded));
+    busy--;
+    markDirty();
+    render();
+    if (failed.length) alert('Some photos failed to upload:\n\n' + failed.join('\n'));
+  });
+
+  // Regroup each run of consecutive full-page photos so vertical ones share a page.
+  document.getElementById('pair-photos').addEventListener('click', async () => {
+    setStatus('Analysing photos...');
+    const isSingle = (p) => p.type === 'photos' && p.layout === 'full' && p.images?.[0]?.url;
+    const result = [];
+    for (let n = 0; n < data.pages.length;) {
+      if (!isSingle(data.pages[n])) {
+        result.push(data.pages[n++]);
+        continue;
+      }
+      const run = [];
+      while (n < data.pages.length && isSingle(data.pages[n])) run.push(data.pages[n++]);
+      const captions = new Map(run.map(p => [p.images[0], p.caption]));
+      for (const page of await photoPages(run.map(p => p.images[0]))) {
+        page.caption = captions.get(page.images[0]) || '';
+        result.push(page);
+      }
+    }
+    const before = data.pages.length;
+    data.pages = result;
+    markDirty();
+    render();
+    alert(before === result.length ? 'No vertical photos to pair.' : `Done: ${before - result.length} page(s) saved by pairing vertical photos.`);
+  });
+
+  // ---------- Fleet prefill ----------
+
+  let fleet = [];
+  const loadFleet = async () => {
+    const { data: yachts } = await supabase.from('yachts').select('*').neq('is_deleted', true).order('name');
+    fleet = yachts || [];
+    document.getElementById('fleet-select').innerHTML =
+      '<option value="">Choose a yacht...</option>' + fleet.map(y => `<option value="${esc(y.id)}">${esc(y.name)}</option>`).join('');
+  };
+
+  document.getElementById('fleet-load').addEventListener('click', async () => {
+    const yacht = fleet.find(y => y.id === document.getElementById('fleet-select').value);
+    if (!yacht) return;
+    if (!confirm(`Replace the current content with the data and photos of ${yacht.name}?`)) return;
+    const contact = data.contact;
+    setStatus('Loading photos...');
+    data = await brochureFromYacht(yacht);
+    data.contact = contact;
+    markDirty();
+    render();
+  });
+
+  // ---------- Save / PDF ----------
+
+  const save = async () => {
+    if (busy) {
+      alert('Please wait until the photos finish uploading.');
+      return false;
+    }
+    setStatus('Saving...');
+    const payload = { name: data.name || 'Untitled', data, updated_at: new Date().toISOString() };
+    const { data: row, error } = id
+      ? await supabase.from('brochures').update(payload).eq('id', id).select('id').single()
+      : await supabase.from('brochures').insert(payload).select('id').single();
+    if (error) {
+      setStatus('Save failed');
+      alert('Error saving brochure: ' + error.message);
+      return false;
+    }
+    if (!id) {
+      id = row.id;
+      history.replaceState(null, '', `?id=${id}`);
+    }
+    dirty = false;
+    setStatus();
+    return true;
+  };
+
+  document.getElementById('save-btn').addEventListener('click', save);
+  document.getElementById('pdf-btn').addEventListener('click', async () => {
+    // Open the tab synchronously so popup blockers allow it.
+    const tab = window.open('', '_blank');
+    if (!(await save())) return tab?.close();
+    const url = `/admin/brochures/print?id=${id}`;
+    if (tab) tab.location.href = url;
+    else window.location.href = url;
+  });
+
+  window.addEventListener('beforeunload', (e) => {
+    if (dirty || busy) e.preventDefault();
+  });
+
+  // ---------- Init ----------
+
+  window.addEventListener('DOMContentLoaded', async () => {
+    if (id) {
+      const { data: row, error } = await supabase.from('brochures').select('*').eq('id', id).single();
+      if (error || !row) {
+        document.getElementById('be-loading').innerHTML = `<p style="color:#ff4d4d;text-align:center;">Error loading brochure: ${esc(error?.message || 'not found')}</p>`;
+        return;
+      }
+      data = { ...newBrochure(), ...row.data };
+      document.getElementById('be-fleet').style.display = 'none';
+    } else {
+      loadFleet();
+    }
+    render();
+    setStatus();
+    document.getElementById('be-loading').style.display = 'none';
+    document.getElementById('be-editor').style.display = 'block';
+  });
+</script>
